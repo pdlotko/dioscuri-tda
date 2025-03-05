@@ -317,6 +317,7 @@ my-email::before {
     position: absolute;
     background-color: #29415D;
     min-width: 160px;
+    min-height: 180px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
@@ -327,6 +328,7 @@ my-email::before {
     text-decoration: none;
     display: none;
     text-align: left;
+    min-height: 60px;
   }
 
 .show {display: block;}
