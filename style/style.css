@@ -320,6 +320,7 @@ my-email::before {
     min-height: 180px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+    top: 1.9cm;
   }
   .dropdown-content a {
     float: none;
