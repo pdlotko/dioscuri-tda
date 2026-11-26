@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="pl" data-default-language="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173d36">
+<meta name="description" content="Interaktywny harmonograf: krzywe Lissajous, dwa prostopadłe wahadła, tłumienie i zapis rysunku. PL / EN.">
+<title>Harmonograf · Lissajous</title>
+<style>
+:root{color-scheme:light;--ink:#203c36;--muted:#61756f;--green:#173d36;--line:#dce5e1;--page:#f3f6f5;--accent:#244e86;--ring:#517db3;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink)}button,input,select{font:inherit}button,input,select,summary{touch-action:manipulation}button,select{min-height:42px}button{border:1px solid var(--line);border-radius:9px;padding:9px 13px;background:#fff;color:var(--ink);font-weight:650;cursor:pointer;transition:background .12s,border-color .12s}button:hover{background:#eaf1ee;border-color:#b1c5bc}button:disabled{opacity:.42;cursor:default}button.primary{color:white;background:var(--green);border-color:var(--green)}button.primary:hover{background:#24584b}button.quiet{background:transparent;border-color:transparent;font-weight:550}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--ring);outline-offset:3px}input[type=range]{accent-color:var(--green);min-width:0;width:100%;height:30px;cursor:pointer;margin:0}input[type=checkbox]{accent-color:var(--green);width:17px;height:17px;flex:none}input[type=number]{width:100%;min-width:0;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 7px;min-height:40px;font-variant-numeric:tabular-nums}input[aria-invalid=true]{border-color:#b53e36}select{color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 27px 7px 10px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23203c36' stroke-width='1.5'/%3E%3C/svg%3E");background-position:right 9px center;background-repeat:no-repeat}h1,h2,h3,p{margin:0}h1{font-size:1.4rem;letter-spacing:-.035em;line-height:1.2}h2{font-size:1.05rem;letter-spacing:-.015em}h3{font-size:1rem;margin-bottom:9px}a{color:#245e8d}button,[type=range],summary{-webkit-tap-highlight-color:transparent}[hidden]{display:none!important}.site-header{max-width:1240px;margin:auto;padding:22px 28px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;gap:13px;align-items:center}.brand-mark{width:46px;height:46px;flex:none}.brand p{margin-top:3px;font-size:.875rem;color:var(--muted)}.languages{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:12px;background:#fff}.languages button{padding:7px 12px;border:0;min-height:35px;font-size:.875rem}.languages button[aria-pressed=true]{background:var(--green);color:white}main{max-width:1240px;padding:0 28px;margin:auto}.app-grid{display:grid;grid-template-columns:minmax(0,1fr) 338px;gap:22px;align-items:start}.visual{position:sticky;top:14px;align-self:start;min-width:0;padding:18px;background:white;border:1px solid var(--line);border-radius:17px;box-shadow:0 5px 22px #183a2a04}.drawing-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px}.drawing-head h2{font-size:.875rem;font-weight:600;color:var(--muted)}.badge{background:#edf2f8;color:#345b81;border-radius:7px;padding:4px 10px;font-size:.875rem;font-weight:650;font-variant-numeric:tabular-nums}.canvas-wrap{position:relative;aspect-ratio:1;width:min(100%,67vh,690px);margin:auto;background:white}.canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}#motion-canvas{pointer-events:none}.transport{display:flex;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid #edf1ee}.transport button{font-size:.875rem}.transport .primary{flex:1}.timeline{display:grid;grid-template-columns:minmax(0,1fr) 42px 76px;align-items:center;gap:10px;margin-top:11px}.timeline output{text-align:right;font-size:.875rem;font-variant-numeric:tabular-nums}.timeline select{min-height:34px;padding-top:4px;padding-bottom:4px;font-size:.875rem}.drawing-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;font-size:.8125rem;color:var(--muted)}.checkbox{display:flex;gap:7px;align-items:center;cursor:pointer;font-size:.875rem}.drawing-bottom .checkbox{font-size:.8125rem}.state{white-space:nowrap;text-align:right}.controls{background:#fff;border:1px solid var(--line);border-radius:17px;padding:19px 20px}.controls>h2{margin-bottom:18px}.control{margin-bottom:17px}.control>label,.control-label{display:block;font-weight:600;font-size:.875rem;margin-bottom:6px}.frequency-inputs{display:flex;align-items:center;gap:10px}.frequency-inputs label{display:flex;gap:8px;align-items:center;flex:1;min-width:0}.frequency-inputs label>span{font-size:.875rem;font-weight:650;color:var(--muted)}.frequency-inputs input{font-size:1.25rem;text-align:center;min-height:45px;font-weight:600}.colon{font-size:1.3rem;color:var(--muted);margin-top:-3px}.ratio-buttons{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:9px}.ratio-buttons button{min-height:32px;padding:4px;font-size:.8125rem;font-variant-numeric:tabular-nums;font-weight:550}.ratio-buttons button[aria-pressed=true]{background:#e5eee9;border-color:#9bb6a8;color:#183e32}.hint{font-size:.8125rem;line-height:1.45;color:var(--muted);margin-top:6px}.slider-row{display:flex;align-items:center;gap:12px;min-width:0}.slider-row>input[type=range]{flex:1}.number-wrap{display:flex;align-items:center;position:relative;flex:none;width:77px;min-width:0}.number-wrap input{font-size:.875rem;text-align:right;padding-right:7px;appearance:textfield;-moz-appearance:textfield}.number-wrap:has(span) input{padding-right:19px}.number-wrap input::-webkit-inner-spin-button{appearance:none}.number-wrap span{position:absolute;right:7px;pointer-events:none;color:var(--muted)}.slider-row>output{width:35px;text-align:right;font-variant-numeric:tabular-nums;font-size:.875rem}.pen-section{padding-top:14px;margin-top:2px;border-top:1px solid var(--line)}.color-row{display:flex;gap:12px;align-items:center}.color-row input[type=color]{width:48px;height:34px;background:white;border:1px solid var(--line);border-radius:7px;padding:3px;cursor:pointer}.swatches{display:flex;gap:7px}.swatches button{position:relative;width:25px;height:25px;min-height:25px;padding:0;border:3px solid white;border-radius:50%;background:var(--swatch);outline:1px solid #d7e1dc}.swatches button[aria-pressed=true]{outline:2px solid var(--swatch);outline-offset:2px}.swatches button:focus-visible{outline:3px solid var(--ring)}details{border-top:1px solid var(--line)}summary{font-weight:650;cursor:pointer;padding:15px 0;font-size:.875rem;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}summary::-webkit-details-marker{display:none}summary:after{content:"+";font-size:1.1rem;font-weight:400;color:var(--muted)}details[open]>summary:after{content:"−"}.advanced-content{padding:2px 0 13px}.advanced-content .checkbox{margin:10px 0 16px}.settings-files{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.settings-files button{font-size:.8125rem;padding:7px 10px;min-height:35px}.export-row{border-top:1px solid var(--line);padding-top:13px;display:flex;gap:7px}.export-row button{font-size:.875rem;flex:1;padding:8px 9px}.export-row .quiet{flex:0}.message{padding:10px 12px;font-size:.875rem;line-height:1.4;background:#edf3fa;border-radius:9px;color:#284c74;margin-top:12px}.message.error{background:#fff1ed;color:#8e3827}.examples{margin-top:26px}.section-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}.section-heading span{font-size:.875rem;color:var(--muted)}.presets{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px}.preset{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:#fff;padding:11px 8px 12px;border-radius:13px;min-width:0}.preset svg{width:100%;height:71px;display:block}.preset span{font-size:.875rem}.preset[aria-pressed=true]{border-color:#779c8a;background:#e9f1ed}.explanation{margin-top:25px}.explanation summary{font-size:1rem;padding:18px 0}.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;padding:3px 0 23px}.help-grid p,.model-content p{font-size:.9375rem;line-height:1.6;margin-bottom:12px}.help-grid .hint{font-size:.875rem}.model-content{padding:0 0 16px;max-width:890px}.equations{display:flex;flex-wrap:wrap;gap:12px 40px;padding:12px 18px;background:#eaf0ec;border-radius:10px;margin-bottom:13px;font-family:Georgia,serif}.equations p{font-size:1.15rem;margin:0}.model-content .sources{font-size:.875rem}footer{max-width:1240px;padding:27px 28px 30px;margin:auto;color:var(--muted);font-size:.8125rem;display:flex;justify-content:space-between;gap:15px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}noscript{display:block;padding:25px;background:#fff3dc}
+@media(min-width:920px) and (max-height:850px){.visual{padding:14px}.canvas-wrap{width:min(100%,59vh)}.transport{padding-top:9px}.drawing-bottom{margin-top:2px}.timeline{margin-top:8px}.site-header{padding-top:14px;padding-bottom:14px}}
+@media(max-width:919px){.app-grid{grid-template-columns:minmax(0,1fr) 300px;gap:14px}main{padding:0 18px}.site-header{padding:18px}.controls{padding:17px 15px}.visual{padding:12px}.transport{gap:5px}.transport button{padding:8px;font-size:.875rem}.transport .primary{flex-basis:100%}.canvas-wrap{width:100%}.drawing-bottom{align-items:flex-start}.state{font-size:.75rem}.presets{gap:7px}.preset span{font-size:.8125rem}}
+@media(max-width:690px){.site-header{padding:14px 14px 13px}.brand-mark{width:39px;height:39px}.brand{gap:10px}h1{font-size:1.2rem}.brand p{font-size:.75rem}.languages button{padding:6px 10px}main{padding:0 12px}.app-grid{grid-template-columns:minmax(0,1fr);gap:14px}.visual{position:relative;top:auto;padding:11px;border-radius:13px}.canvas-wrap{width:min(100%,52svh);max-height:none}.drawing-head{margin-bottom:2px}.transport .primary{flex-basis:auto}.transport button{font-size:.875rem;padding:8px 9px;flex:1;line-height:1.2}.transport{flex-wrap:nowrap;gap:5px;padding-top:8px}.timeline{margin-top:7px}.drawing-bottom{align-items:center}.state{font-size:.75rem}.controls{padding:18px;border-radius:13px}.frequency-inputs input{font-size:1.35rem}.controls .ratio-buttons button{min-height:37px}.section-heading{display:block}.section-heading span{display:block;margin-top:4px;font-size:.8125rem}.presets{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.preset svg{height:62px}.preset span{font-size:.875rem}.help-grid{grid-template-columns:1fr;gap:15px}.explanation summary{font-size:.9375rem}.equations{display:block}.equations p{font-size:1rem;margin:8px 0}footer{padding:23px 15px;flex-wrap:wrap}.examples{margin-top:22px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+@media print{.site-header,footer,.controls,.transport,.timeline,.drawing-bottom,.examples,.explanation,.drawing-head{display:none!important}.app-grid{display:block}main{padding:0}.visual{border:0;box-shadow:none;position:static;padding:0}.canvas-wrap{width:100%;max-height:none}body{background:white}#motion-canvas{display:none}}
+
+.frequency>label{margin-top:10px}
+#phase-difference-value{width:56px;flex:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><rect x="1" y="1" width="46" height="46" rx="13" fill="#173d36"/><path d="M24 9C44 9 4 39 24 39C44 39 4 9 24 9Z" fill="none" stroke="#d9eee6" stroke-width="1.8"/><path d="M9 24C9 4 39 44 39 24C39 4 9 44 9 24Z" fill="none" stroke="#b4c8ff" stroke-width="1.4"/></svg><div><h1 data-i18n="title">Harmonograf</h1><p data-i18n="subtitle">Dwa wahadła · krzywe Lissajous</p></div></div>
+  <nav class="languages" aria-label="Język / Language"><button id="lang-pl" type="button" aria-pressed="true">PL</button><button id="lang-en" type="button" aria-pressed="false">EN</button></nav>
+</header>
+<main>
+<div class="app-grid">
+  <section class="visual" aria-labelledby="drawing-title">
+    <div class="drawing-head"><h2 id="drawing-title" data-i18n="drawing">Twój rysunek</h2><span id="ratio-badge" class="badge">2 : 3</span></div>
+    <div class="canvas-wrap" id="canvas-wrap">
+      <canvas id="drawing-canvas" width="1000" height="1000" role="img" aria-label="Rysunek harmonografu"></canvas>
+      <canvas id="motion-canvas" width="1000" height="1000" aria-hidden="true"></canvas>
+    </div>
+    <div class="transport">
+      <button id="animate" class="primary" type="button" data-i18n="animate">Rysuj od początku</button>
+      <button id="pause" type="button" disabled data-i18n="pause">Pauza</button>
+      <button id="show-all" type="button" data-i18n="showAll">Pokaż cały rysunek</button>
+    </div>
+    <div class="timeline"><label for="progress" class="sr-only" data-i18n="progress">Przebieg rysowania</label><input id="progress" type="range" min="0" max="1000" step="1" value="1000"><output id="progress-value" for="progress">100%</output><label for="speed" class="sr-only" data-i18n="speed">Tempo animacji</label><select id="speed" aria-label="Tempo animacji"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option><option value="8">8×</option><option value="16">16×</option></select></div>
+    <div class="drawing-bottom"><label class="checkbox"><input id="guides" type="checkbox"><span data-i18n="guides">Pokaż ruch X / Y</span></label><span class="state" id="drawing-status" role="status">Cały rysunek</span></div>
+  </section>
+  <section class="controls" aria-labelledby="controls-title">
+    <h2 id="controls-title" data-i18n="settings">Ustawienia</h2>
+    <div class="control frequency">
+      <span id="frequency-label" class="control-label" data-i18n="frequency">Częstotliwości X : Y</span>
+      <div class="frequency-inputs"><label><span>X</span><input id="freqX" type="number" min="0.25" max="12" step="0.001" value="2" inputmode="decimal" data-param="freqX" aria-labelledby="frequency-label freq-x-label"><span id="freq-x-label" class="sr-only">X</span></label><span class="colon">:</span><label><span>Y</span><input id="freqY" type="number" min="0.25" max="12" step="0.001" value="3" inputmode="decimal" data-param="freqY" aria-labelledby="frequency-label freq-y-label"><span id="freq-y-label" class="sr-only">Y</span></label></div>
+      <label for="frequency-ratio" data-i18n="ratioSlider">Proporcja X : Y (stałe X)</label>
+      <input id="frequency-ratio" type="range" min="0.25" max="12" step="0.001" value="3" data-param="freqY">
+      <div class="ratio-buttons" role="group" aria-labelledby="frequency-label"><button type="button" data-ratio="1,1">1:1</button><button type="button" data-ratio="1,2">1:2</button><button type="button" data-ratio="2,3">2:3</button><button type="button" data-ratio="3,4">3:4</button><button type="button" data-ratio="4,5">4:5</button></div>
+      <p id="ratio-note" class="hint"></p>
+    </div>
+    <div class="control"><label for="phase-difference" data-i18n="phaseDifference">Początkowa różnica faz (Y − X)</label><div class="slider-row"><input id="phase-difference" type="range" min="0" max="359.9" step="0.1" value="35" aria-valuetext="35°"><output id="phase-difference-value" for="phase-difference">35°</output></div></div>
+    <div class="control"><label for="decayX" id="decay-label" data-i18n="damping">Tłumienie X i Y</label><div class="slider-row"><input id="decayX" type="range" min="0" max="1000" step="1" value="141" data-param="decayX" data-transform="square"><div class="number-wrap"><input id="decayX-number" type="number" min="0" max="1" step="0.0001" value="0.02" data-param="decayX" aria-label="Współczynnik tłumienia"></div></div><p id="decay-note" class="hint"></p></div>
+    <div class="control"><label for="cycles" data-i18n="duration">Długość rysunku</label><div class="slider-row"><input id="cycles" type="range" min="0.01" max="80" step="0.01" value="36" data-param="cycles"><div class="number-wrap"><input id="cycles-number" type="number" min="0.01" max="80" step="0.01" value="36" data-param="cycles" aria-label="Liczba drgań X"></div></div><p class="hint" data-i18n="durationHint">Liczba pełnych drgań wahadła X.</p></div>
+    <div class="pen-section">
+      <div class="control"><label for="pen-color" data-i18n="color">Kolor pisaka</label><div class="color-row"><input id="pen-color" type="color" value="#244e86" aria-label="Kolor pisaka"><div class="swatches"><button type="button" data-color="#244e86" style="--swatch:#244e86" aria-label="Granat"></button><button type="button" data-color="#147260" style="--swatch:#147260" aria-label="Zieleń"></button><button type="button" data-color="#794c9f" style="--swatch:#794c9f" aria-label="Fiolet"></button><button type="button" data-color="#b33e57" style="--swatch:#b33e57" aria-label="Malina"></button><button type="button" data-color="#202c34" style="--swatch:#202c34" aria-label="Grafit"></button></div></div></div>
+      <div class="control"><label for="penWidth" data-i18n="width">Grubość pisaka</label><div class="slider-row"><input id="penWidth" type="range" min="0.3" max="8" step="0.1" value="1.4" data-param="penWidth"><output id="width-value" for="penWidth">1.4</output></div></div>
+    </div>
+    <details id="advanced">
+      <summary data-i18n="advanced">Dopasuj do harmonografu</summary>
+      <div class="advanced-content">
+        <div class="control"><label for="phaseX" data-i18n="phaseX">Faza wahadła X</label><div class="slider-row"><input id="phaseX" type="range" min="0" max="360" step="0.1" value="0" data-param="phaseXDeg"><div class="number-wrap"><input id="phaseX-number" type="number" min="0" max="360" step="0.1" value="0" data-param="phaseXDeg" aria-label="Faza X w stopniach"><span>°</span></div></div></div>
+        <div class="control"><label for="phaseY" data-i18n="phaseY">Faza wahadła Y</label><div class="slider-row"><input id="phaseY" type="range" min="0" max="360" step="0.1" value="35" data-param="phaseYDeg"><div class="number-wrap"><input id="phaseY-number" type="number" min="0" max="360" step="0.1" value="35" data-param="phaseYDeg" aria-label="Faza Y w stopniach"><span>°</span></div></div></div>
+        <div class="control"><label for="amplitudeX" data-i18n="amplitudeX">Amplituda X</label><div class="slider-row"><input id="amplitudeX" type="range" min="0" max="1" step="0.01" value="1" data-param="amplitudeX"><div class="number-wrap"><input id="amplitudeX-number" type="number" min="0" max="1" step="0.01" value="1" data-param="amplitudeX" aria-label="Amplituda X"></div></div></div>
+        <div class="control"><label for="amplitudeY" data-i18n="amplitudeY">Amplituda Y</label><div class="slider-row"><input id="amplitudeY" type="range" min="0" max="1" step="0.01" value="0.9" data-param="amplitudeY"><div class="number-wrap"><input id="amplitudeY-number" type="number" min="0" max="1" step="0.01" value="0.9" data-param="amplitudeY" aria-label="Amplituda Y"></div></div></div>
+        <label class="checkbox"><input id="separate-decay" type="checkbox"><span data-i18n="separateDecay">Osobne tłumienie w osi Y</span></label>
+        <div class="control" id="decayY-control" hidden><label for="decayY" data-i18n="dampingY">Tłumienie Y</label><div class="slider-row"><input id="decayY" type="range" min="0" max="1000" step="1" value="141" data-param="decayY" data-transform="square"><div class="number-wrap"><input id="decayY-number" type="number" min="0" max="1" step="0.0001" value="0.02" data-param="decayY" aria-label="Tłumienie Y"></div></div></div>
+        <p class="hint" data-i18n="decayUnit">Oba współczynniki tłumienia odnoszą się do czasu mierzonego w okresach X.</p>
+        <div class="settings-files"><button id="save-settings" type="button" data-i18n="saveSettings">Zapisz ustawienia</button><button id="load-settings" type="button" data-i18n="loadSettings">Wczytaj ustawienia</button><input id="settings-file" class="sr-only" type="file" accept=".json,application/json" tabindex="-1" aria-label="Plik ustawień JSON"></div>
+      </div>
+    </details>
+    <div class="export-row"><button id="save-png" type="button" data-i18n="savePNG">Zapisz PNG</button><button id="save-svg" type="button" data-i18n="saveSVG">Zapisz SVG</button><button id="reset" class="quiet" type="button" data-i18n="reset">Reset</button></div>
+    <p id="message" class="message" role="status" hidden></p>
+  </section>
+</div>
+<section class="examples" aria-labelledby="examples-title"><div class="section-heading"><h2 id="examples-title" data-i18n="examples">Spróbuj innego kształtu</h2><span data-i18n="examplesHint">Wybierz przykład i zmień ustawienia.</span></div><div id="presets" class="presets"></div></section>
+<section class="explanation">
+  <details id="how-to"><summary data-i18n="howTo">Jak to działa i jak dopasować prawdziwe wahadła?</summary><div class="help-grid"><div><h3 data-i18n="tryTitle">Co warto sprawdzić?</h3><p data-i18n="tryText">Zacznij od 1:1 i tłumienia 0. Zmiana fazy zamienia odcinek w elipsę lub okrąg. Potem wybierz 2:3. Dodaj tłumienie, aby kolejne obiegi zbliżały się do środka.</p><p data-i18n="detuneText">Spróbuj też 2:3.01. Małe rozstrojenie zmienia wzór podczas kolejnych drgań.</p><p data-i18n="speedText">Tempo zmienia tylko szybkość animacji. Kształt i eksportowany pełny rysunek pozostają takie same.</p></div><div><h3 data-i18n="matchTitle">Dopasuj rzeczywisty rysunek</h3><p data-i18n="matchText">Zmierz okresy obu wahadeł. Stosunek częstotliwości jest odwrotnością stosunku okresów: fY / fX = TX / TY. Następnie dopasuj fazy, amplitudy i tłumienie. Przykład: TX = 2 s, TY = 1⅓ s daje X:Y = 2:3.</p><p data-i18n="halfText">Jeśli amplituda spada o połowę w ciągu 10 okresów X, wpisz tłumienie około 0.0693. Osobne tłumienie Y znajdziesz w ustawieniach rozwijanych.</p><p class="hint" data-i18n="modelLimit">To model dwóch prostopadłych, tłumionych drgań. Duże wychylenia, sprzężenia wahadeł i tarcie pisaka mogą zmieniać ślad rzeczywistego urządzenia.</p></div></div></details>
+  <details id="model"><summary data-i18n="modelTitle">Model matematyczny</summary><div class="model-content"><div class="equations"><p>x(u) = A<sub>X</sub> e<sup>−d<sub>X</sub>u</sup> sin(2πu + φ<sub>X</sub>)</p><p>y(u) = A<sub>Y</sub> e<sup>−d<sub>Y</sub>u</sup> sin(2πru + φ<sub>Y</sub>)</p></div><p data-i18n="modelText">u to czas w okresach wahadła X, r = fY / fX. Częstotliwości oznaczają obserwowane drgania. Fazy w równaniu są w radianach, a w panelu — w stopniach. Amplitudy i grubość pisaka mają skalę umowną.</p><p data-i18n="exportText">PNG i SVG zawierają cały rysunek, bez pomocniczych osi. PNG ma 2400 × 2400 pikseli. SVG zachowuje wektorową linię oraz parametry modelu w metadanych.</p><p class="sources"><span data-i18n="sources">Źródła modelu:</span> <a href="https://ucscphysicsdemo.sites.ucsc.edu/harmonograph/" target="_blank" rel="noopener">UCSC Physics</a> · <a href="https://cmp.phys.ufl.edu/files/damped-driven-oscillator.html" target="_blank" rel="noopener">University of Florida</a></p></div></details>
+</section>
+</main>
+<footer><span>© Paweł Dłotko</span><span data-i18n="offline">Działa także bez internetu.</span></footer>
+<noscript>Włącz JavaScript, aby używać harmonografu. / Enable JavaScript to use the harmonograph.</noscript>
+<script>
+/* Harmonograph mathematical engine. © Paweł Dłotko.
+ * Pure, deterministic functions; no browser or third-party dependencies.
+ * u = elapsed X periods. Both decay constants are measured per X period.
+ * freqX/freqY are observed oscillation frequencies, not undamped natural ones.
+ */
+(function (root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.HarmonographMath = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  const LIMITS = Object.freeze({
+    freqMin: 0.25, freqMax: 12,
+    amplitudeMin: 0, amplitudeMax: 1,
+    decayMin: 0, decayMax: 1,
+    cyclesMin: 0.01, cyclesMax: 80,
+    penWidthMin: 0.3, penWidthMax: 8,
+    maxPoints: 120000, samplesPerCycle: 128, maxRatio: 48,
+    canvasSize: 1000, canvasRadius: 420
+  });
+
+  const DEFAULTS = Object.freeze({
+    freqX: 2, freqY: 3,
+    phaseXDeg: 0, phaseYDeg: 35,
+    amplitudeX: 1, amplitudeY: 0.9,
+    decayX: 0.02, decayY: 0.02,
+    cycles: 36, color: '#194e44', penWidth: 1.8
+  });
+
+  const GEOMETRY_KEYS = Object.freeze([
+    'phaseXDeg', 'phaseYDeg', 'amplitudeX', 'amplitudeY',
+    'decayX', 'decayY', 'cycles'
+  ]);
+
+  function number(value, name, fallback) {
+    if (value === undefined) return fallback;
+    if (typeof value !== 'number' &&
+        !(typeof value === 'string' && value.trim().length > 0)) {
+      throw new TypeError(name + ' must be a finite number.');
+    }
+    const n = Number(value);
+    if (!Number.isFinite(n)) throw new TypeError(name + ' must be a finite number.');
+    return n;
+  }
+
+  function bounded(raw, name, min, max) {
+    const n = number(raw[name], name, DEFAULTS[name]);
+    if (n < min || n > max) {
+      throw new RangeError(name + ' must be between ' + min + ' and ' + max + '.');
+    }
+    return n;
+  }
+
+  function phase(value, name) {
+    const n = number(value, name, DEFAULTS[name]);
+    return ((n % 360) + 360) % 360;
+  }
+
+  function color(value) {
+    const text = value === undefined ? DEFAULTS.color : value;
+    if (typeof text !== 'string' || !/^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/.test(text)) {
+      throw new TypeError('color must be a hexadecimal RGB color.');
+    }
+    const hex = text.toLowerCase();
+    return hex.length === 4 ? '#' + hex.slice(1).split('').map(c => c + c).join('') : hex;
+  }
+
+  function normalizeParams(raw) {
+    if (raw === undefined) raw = {};
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+      throw new TypeError('Parameters must be an object.');
+    }
+    return {
+      freqX: bounded(raw, 'freqX', LIMITS.freqMin, LIMITS.freqMax),
+      freqY: bounded(raw, 'freqY', LIMITS.freqMin, LIMITS.freqMax),
+      phaseXDeg: phase(raw.phaseXDeg, 'phaseXDeg'),
+      phaseYDeg: phase(raw.phaseYDeg, 'phaseYDeg'),
+      amplitudeX: bounded(raw, 'amplitudeX', LIMITS.amplitudeMin, LIMITS.amplitudeMax),
+      amplitudeY: bounded(raw, 'amplitudeY', LIMITS.amplitudeMin, LIMITS.amplitudeMax),
+      decayX: bounded(raw, 'decayX', LIMITS.decayMin, LIMITS.decayMax),
+      decayY: bounded(raw, 'decayY', LIMITS.decayMin, LIMITS.decayMax),
+      cycles: bounded(raw, 'cycles', LIMITS.cyclesMin, LIMITS.cyclesMax),
+      color: color(raw.color),
+      penWidth: bounded(raw, 'penWidth', LIMITS.penWidthMin, LIMITS.penWidthMax)
+    };
+  }
+
+  function timingFor(p) {
+    const ratio = p.freqY / p.freqX;
+    const fastest = Math.max(1, ratio);
+    const totalCyclesFastest = p.cycles * fastest;
+    const segments = Math.max(1, Math.ceil(totalCyclesFastest * LIMITS.samplesPerCycle));
+    const pointCount = segments + 1;
+    const maxCycles = Math.min(LIMITS.cyclesMax,
+      (LIMITS.maxPoints - 1) / (LIMITS.samplesPerCycle * fastest));
+    return {
+      ratio,
+      cyclesX: p.cycles,
+      cyclesY: p.cycles * ratio,
+      totalCyclesFastest,
+      segments,
+      pointCount,
+      maxCycles,
+      samplesPerFastCycle: segments / totalCyclesFastest,
+      overBudget: pointCount > LIMITS.maxPoints
+    };
+  }
+
+  function getTiming(raw) {
+    return timingFor(normalizeParams(raw));
+  }
+
+  function pointFor(p, u) {
+    // Reduce each phase before multiplication by 2π. Both axes use the same u.
+    const xPhase = 2 * Math.PI * ((u % 1) + p.phaseXDeg / 360);
+    const yPhase = 2 * Math.PI * (((u * (p.freqY / p.freqX)) % 1) + p.phaseYDeg / 360);
+    return {
+      x: p.amplitudeX * Math.exp(-p.decayX * u) * Math.sin(xPhase),
+      y: p.amplitudeY * Math.exp(-p.decayY * u) * Math.sin(yPhase)
+    };
+  }
+
+  function pointAt(raw, u) {
+    const p = normalizeParams(raw);
+    u = number(u, 'u');
+    if (u === undefined || u < 0 || u > 1000000) {
+      throw new RangeError('u must be between 0 and 1000000 elapsed X periods.');
+    }
+    return pointFor(p, u);
+  }
+
+  function toCanvas(point, size) {
+    size = number(size, 'size', LIMITS.canvasSize);
+    if (size <= 0 || size > 100000) throw new RangeError('Canvas size must be positive and at most 100000.');
+    if (!point || !Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+      throw new TypeError('A point must contain finite x and y coordinates.');
+    }
+    const radius = size * LIMITS.canvasRadius / LIMITS.canvasSize;
+    return {x: size / 2 + radius * point.x, y: size / 2 - radius * point.y};
+  }
+
+  function generateCurve(raw) {
+    const params = normalizeParams(raw);
+    const timing = timingFor(params);
+    if (timing.overBudget) {
+      throw new RangeError('This ratio and duration require ' + timing.pointCount +
+        ' points. Reduce cycles to at most ' + timing.maxCycles.toFixed(3) +
+        ' (limit ' + LIMITS.maxPoints + ' points).');
+    }
+    const points = new Array(timing.pointCount);
+    for (let i = 0; i <= timing.segments; i++) {
+      // Explicit last point guarantees the exact requested terminal time.
+      const u = i === timing.segments ? params.cycles : params.cycles * i / timing.segments;
+      const point = pointFor(params, u);
+      points[i] = {u, x: point.x, y: point.y};
+    }
+    return {params, points, timing};
+  }
+
+  function xml(text) {
+    // Remove characters forbidden by XML 1.0 while retaining valid Unicode.
+    return Array.from(String(text)).filter(ch => {
+      const cp = ch.codePointAt(0);
+      return cp === 9 || cp === 10 || cp === 13 ||
+        (cp >= 32 && cp <= 0x10ffff && !(cp >= 0xd800 && cp <= 0xdfff) && cp !== 0xfffe && cp !== 0xffff);
+    }).join('').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+  }
+
+  function format(n) {
+    return n.toFixed(6).replace(/\.?0+$/, '');
+  }
+
+  function sameGeometry(a, b) {
+    return a.freqY / a.freqX === b.freqY / b.freqX &&
+      GEOMETRY_KEYS.every(key => a[key] === b[key]);
+  }
+
+  function exportSVG(raw, suppliedCurve, options) {
+    const p = normalizeParams(raw);
+    const curve = suppliedCurve === undefined ? generateCurve(p) : suppliedCurve;
+    const expected = timingFor(p);
+    if (expected.overBudget) throw new RangeError('Curve exceeds the sampling point budget.');
+    if (!curve || !curve.params || !Array.isArray(curve.points) ||
+        !sameGeometry(p, normalizeParams(curve.params)) ||
+        curve.points.length !== expected.pointCount ||
+        curve.points[0].u !== 0 || curve.points[curve.points.length - 1].u !== p.cycles) {
+      throw new TypeError('The supplied curve does not describe the complete current geometry.');
+    }
+    options = options || {};
+    const title = options.title === undefined ? 'Harmonograph — Lissajous curve' : options.title;
+    const description = options.description === undefined ?
+      'Two orthogonal exponentially damped oscillations. Time is measured in X periods. © Paweł Dłotko.' : options.description;
+    const path = new Array(curve.points.length);
+    for (let i = 0; i < curve.points.length; i++) {
+      const point = curve.points[i];
+      if (!Number.isFinite(point.u) || Math.abs(point.x) > 1.000000000001 || Math.abs(point.y) > 1.000000000001) {
+        throw new TypeError('The supplied curve contains an invalid point.');
+      }
+      const mapped = toCanvas(point);
+      path[i] = (i === 0 ? 'M' : 'L') + format(mapped.x) + ' ' + format(mapped.y);
+    }
+    const metadata = {
+      schemaVersion: 1,
+      model: 'orthogonal-damped-sines',
+      timeUnit: 'X oscillation periods',
+      formula: 'x=Ax*exp(-decayX*u)*sin(2*pi*u+phaseX); y=Ay*exp(-decayY*u)*sin(2*pi*(freqY/freqX)*u+phaseY)',
+      phaseUnit: 'degrees in params; radians in formula',
+      params: p,
+      sampledPoints: curve.points.length,
+      samplesPerFastCycle: expected.samplesPerFastCycle
+    };
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-labelledby="title desc">\n' +
+      '  <title id="title">' + xml(title) + '</title>\n' +
+      '  <desc id="desc">' + xml(description) + '</desc>\n' +
+      '  <metadata>' + xml(JSON.stringify(metadata)) + '</metadata>\n' +
+      '  <rect width="1000" height="1000" fill="#ffffff"/>\n' +
+      '  <path d="' + path.join(' ') + '" fill="none" stroke="' + p.color +
+      '" stroke-width="' + format(p.penWidth) + '" stroke-linecap="round" stroke-linejoin="round"/>\n' +
+      '</svg>\n';
+  }
+
+  return Object.freeze({
+    version: '1.0.0', LIMITS, DEFAULTS,
+    normalizeParams, pointAt, toCanvas, getTiming, generateCurve, exportSVG
+  });
+});
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const M = window.HarmonographMath;
+  const $ = id => document.getElementById(id);
+  const STORAGE = 'pawel-dlotko-harmonograph-v1';
+  const BASE = Object.assign({}, M.DEFAULTS, {color:'#244e86',penWidth:1.4});
+  const TEXT = {
+    pl: {
+      title:'Harmonograf',subtitle:'Dwa wahadła · krzywe Lissajous',drawing:'Twój rysunek',settings:'Ustawienia',
+      animate:'Rysuj od początku',pause:'Pauza',resume:'Wznów',showAll:'Pokaż cały rysunek',progress:'Przebieg rysowania',speed:'Tempo animacji',guides:'Pokaż ruch X / Y',
+      frequency:'Częstotliwości X : Y',ratioSlider:'Proporcja X : Y (stałe X)',phaseDifference:'Początkowa różnica faz (Y − X)',phaseY:'Faza wahadła Y',phaseX:'Faza wahadła X',damping:'Tłumienie X i Y',dampingX:'Tłumienie X',dampingY:'Tłumienie Y',duration:'Długość rysunku',durationHint:'Liczba pełnych drgań wahadła X.',
+      color:'Kolor pisaka',width:'Grubość pisaka',advanced:'Dopasuj do harmonografu',amplitudeX:'Amplituda X',amplitudeY:'Amplituda Y',separateDecay:'Osobne tłumienie w osi Y',decayUnit:'Oba współczynniki tłumienia odnoszą się do czasu mierzonego w okresach X.',
+      saveSettings:'Zapisz ustawienia',loadSettings:'Wczytaj ustawienia',savePNG:'Zapisz PNG',saveSVG:'Zapisz SVG',reset:'Reset',
+      examples:'Spróbuj innego kształtu',examplesHint:'Wybierz przykład i zmień ustawienia.',howTo:'Jak to działa i jak dopasować prawdziwe wahadła?',
+      tryTitle:'Co warto sprawdzić?',tryText:'Zacznij od 1:1 i tłumienia 0. Zmiana fazy zamienia odcinek w elipsę lub okrąg. Potem wybierz 2:3. Dodaj tłumienie, aby kolejne obiegi zbliżały się do środka.',detuneText:'Spróbuj też 2:3.01. Małe rozstrojenie zmienia wzór podczas kolejnych drgań.',speedText:'Tempo zmienia tylko szybkość animacji. Kształt i eksportowany pełny rysunek pozostają takie same.',
+      matchTitle:'Dopasuj rzeczywisty rysunek',matchText:'Zmierz okresy obu wahadeł. Stosunek częstotliwości jest odwrotnością stosunku okresów: fY / fX = TX / TY. Następnie dopasuj fazy, amplitudy i tłumienie. Przykład: TX = 2 s, TY = 1⅓ s daje X:Y = 2:3.',halfText:'Jeśli amplituda spada o połowę w ciągu 10 okresów X, wpisz tłumienie około 0.0693. Osobne tłumienie Y znajdziesz w ustawieniach rozwijanych.',
+      modelLimit:'To model dwóch prostopadłych, tłumionych drgań. Duże wychylenia, sprzężenia wahadeł i tarcie pisaka mogą zmieniać ślad rzeczywistego urządzenia.',
+      modelTitle:'Model matematyczny',modelText:'u to czas w okresach wahadła X, r = fY / fX. Częstotliwości oznaczają obserwowane drgania. Fazy w równaniu są w radianach, a w panelu — w stopniach. Amplitudy i grubość pisaka mają skalę umowną.',
+      exportText:'PNG i SVG zawierają cały rysunek, bez pomocniczych osi. PNG ma 2400 × 2400 pikseli. SVG zachowuje wektorową linię oraz parametry modelu w metadanych.',
+      sources:'Źródła modelu:',offline:'Działa także bez internetu.',full:'Cały rysunek',running:'Rysowanie',paused:'Pauza',
+      ratioNote:r=>'Y: '+r+' drgania na 1 drganie X.',decayNote:(x,y)=>'Po 20 drganiach X amplituda: '+(y===null?x+'%.':'X '+x+'%, Y '+y+'%.'),
+      maxDuration:n=>'Dla tego stosunku częstotliwości długość ograniczono do '+n+' drgań X, aby zachować płynną linię.',
+      invalid:'Sprawdź wartość: częstotliwości 0.25–12, amplitudy 0–1, tłumienie 0–1, grubość 0.3–8.',
+      loaded:'Ustawienia wczytane. Pokazano cały rysunek.',invalidFile:'Ten plik nie zawiera poprawnych ustawień harmonografu.',fileLarge:'Plik ustawień jest zbyt duży (maks. 100 kB).',
+      savedPNG:'Zapisano cały rysunek jako PNG.',savedSVG:'Zapisano cały rysunek jako SVG.',savedSettings:'Zapisano parametry harmonografu.',exportFailed:'Nie udało się zapisać pliku. Spróbuj ponownie.',
+      canvasLabel:'Pełny lub częściowy rysunek dwóch tłumionych drgań',phaseXLabel:'Faza X w stopniach',phaseYLabel:'Faza Y w stopniach',cyclesLabel:'Liczba drgań X',dampingLabel:'Współczynnik tłumienia',settingsFile:'Plik ustawień JSON',
+      circle:'Okrąg',eight:'Ósemka',lissajous:'Lissajous 2:3',spiral:'Spirala',rose:'Rozeta',harmonograph:'Harmonograf',colors:['Granat','Zieleń','Fiolet','Malina','Grafit']
+    },
+    en: {
+      title:'Harmonograph',subtitle:'Two pendulums · Lissajous curves',drawing:'Your drawing',settings:'Settings',
+      animate:'Draw from start',pause:'Pause',resume:'Resume',showAll:'Show full drawing',progress:'Drawing progress',speed:'Animation speed',guides:'Show X / Y motion',
+      frequency:'Frequencies X : Y',ratioSlider:'X : Y ratio (fixed X)',phaseDifference:'Initial phase difference (Y − X)',phaseY:'Y pendulum phase',phaseX:'X pendulum phase',damping:'X and Y damping',dampingX:'X damping',dampingY:'Y damping',duration:'Drawing duration',durationHint:'Number of complete X pendulum oscillations.',
+      color:'Pen colour',width:'Pen width',advanced:'Match your harmonograph',amplitudeX:'X amplitude',amplitudeY:'Y amplitude',separateDecay:'Separate damping for Y',decayUnit:'Both damping coefficients use time measured in X periods.',
+      saveSettings:'Save settings',loadSettings:'Load settings',savePNG:'Save PNG',saveSVG:'Save SVG',reset:'Reset',
+      examples:'Try another shape',examplesHint:'Choose an example, then change the settings.',howTo:'How does it work, and how can I match real pendulums?',
+      tryTitle:'What can you explore?',tryText:'Start with 1:1 and zero damping. Change the phase to turn a line into an ellipse or circle. Then try 2:3. Add damping to make successive loops approach the centre.',detuneText:'Also try 2:3.01. A small frequency mismatch changes the pattern over successive oscillations.',speedText:'Speed only changes the animation. The shape and exported full drawing stay the same.',
+      matchTitle:'Match a real drawing',matchText:'Measure both pendulum periods. The frequency ratio is the inverse period ratio: fY / fX = TX / TY. Then match the phases, amplitudes and damping. For example, TX = 2 s and TY = 1⅓ s give X:Y = 2:3.',halfText:'If the amplitude halves over 10 X periods, enter a damping coefficient of about 0.0693. Separate Y damping is available in the expandable settings.',
+      modelLimit:'This is a model of two perpendicular damped oscillations. Large swings, pendulum coupling and pen friction may change the trace of a physical machine.',
+      modelTitle:'Mathematical model',modelText:'u is time in X pendulum periods and r = fY / fX. Frequencies describe the observed oscillations. Phases are in radians in the equations and degrees in the controls. Amplitudes and pen width use relative units.',
+      exportText:'PNG and SVG contain the full drawing without guide axes. PNG is 2400 × 2400 pixels. SVG keeps the vector line and model parameters in its metadata.',
+      sources:'Model sources:',offline:'Works offline, too.',full:'Full drawing',running:'Drawing',paused:'Paused',
+      ratioNote:r=>'Y: '+r+' oscillations per 1 X oscillation.',decayNote:(x,y)=>'After 20 X periods, amplitude: '+(y===null?x+'%.':'X '+x+'%, Y '+y+'%.'),
+      maxDuration:n=>'At this frequency ratio, duration is limited to '+n+' X oscillations to keep the line smooth.',
+      invalid:'Check the value: frequencies 0.25–12, amplitudes 0–1, damping 0–1, width 0.3–8.',
+      loaded:'Settings loaded. The full drawing is shown.',invalidFile:'This file does not contain valid harmonograph settings.',fileLarge:'The settings file is too large (max. 100 kB).',
+      savedPNG:'Saved the full drawing as PNG.',savedSVG:'Saved the full drawing as SVG.',savedSettings:'Saved harmonograph parameters.',exportFailed:'Could not save the file. Please try again.',
+      canvasLabel:'Full or partial drawing of two damped oscillations',phaseXLabel:'X phase in degrees',phaseYLabel:'Y phase in degrees',cyclesLabel:'Number of X oscillations',dampingLabel:'Damping coefficient',settingsFile:'JSON settings file',
+      circle:'Circle',eight:'Figure eight',lissajous:'Lissajous 2:3',spiral:'Spiral',rose:'Rosette',harmonograph:'Harmonograph',colors:['Navy','Green','Purple','Raspberry','Graphite']
+    }
+  };
+  const PRESETS = [
+    {id:'circle',freqX:1,freqY:1,phaseXDeg:0,phaseYDeg:90,amplitudeX:1,amplitudeY:1,decayX:0,decayY:0,cycles:1},
+    {id:'eight',freqX:1,freqY:2,phaseXDeg:0,phaseYDeg:0,amplitudeX:1,amplitudeY:0.85,decayX:0,decayY:0,cycles:1},
+    {id:'lissajous',freqX:2,freqY:3,phaseXDeg:0,phaseYDeg:35,amplitudeX:1,amplitudeY:0.9,decayX:0,decayY:0,cycles:2},
+    {id:'spiral',freqX:1,freqY:1,phaseXDeg:0,phaseYDeg:90,amplitudeX:1,amplitudeY:1,decayX:0.05,decayY:0.05,cycles:32},
+    {id:'rose',freqX:3,freqY:2.01,phaseXDeg:0,phaseYDeg:25,amplitudeX:1,amplitudeY:0.95,decayX:0.007,decayY:0.007,cycles:65},
+    {id:'harmonograph',freqX:2,freqY:3.012,phaseXDeg:0,phaseYDeg:35,amplitudeX:1,amplitudeY:0.9,decayX:0.017,decayY:0.017,cycles:45}
+  ];
+  let params = M.normalizeParams(BASE), lang = 'pl', separateDecay = false, activePreset = '';
+  let curve, fraction = 1, running = false, rafId = 0, previousTime = null, lastPainted = 0, refreshId = 0;
+  let speed = 4, showGuides = false, pixelSize = 0;
+  const canvas = $('drawing-canvas'), motion = $('motion-canvas');
+  const ctx = canvas.getContext('2d'), motionCtx = motion.getContext('2d');
+  const format = (value, digits=3) => Number(value).toLocaleString(lang==='pl'?'pl-PL':'en-GB',{maximumFractionDigits:digits});
+  const t = key => TEXT[lang][key];
+  function message(value, error=false) {
+    $('message').textContent = value;
+    $('message').hidden = !value;
+    $('message').classList.toggle('error', error);
+  }
+  function persist() {
+    try {localStorage.setItem(STORAGE,JSON.stringify({params,lang,separateDecay,showGuides,speed}));} catch (_) {}
+  }
+  function readStored() {
+    try {
+      const saved=JSON.parse(localStorage.getItem(STORAGE)||'null');
+      if(saved) {
+        const proposed=M.normalizeParams(saved.params);
+        if(!M.getTiming(proposed).overBudget)params=proposed;
+        lang=saved.lang==='en'?'en':'pl';
+        separateDecay=saved.separateDecay===true;
+        showGuides=saved.showGuides===true;
+        speed=[0.5,1,2,4,8,16].includes(saved.speed)?saved.speed:4;
+      }
+    } catch (_) {}
+    const pageLanguage=document.documentElement.dataset.defaultLanguage;
+    if(pageLanguage==='pl'||pageLanguage==='en')lang=pageLanguage;
+    const requested=new URLSearchParams(location.search).get('lang');
+    if(requested==='pl'||requested==='en')lang=requested;
+    if(!separateDecay)params=M.normalizeParams(Object.assign({},params,{decayY:params.decayX}));
+  }
+  function stop() {
+    running=false;
+    if(rafId)cancelAnimationFrame(rafId);
+    rafId=0;previousTime=null;
+  }
+  function syncTransport() {
+    $('pause').disabled=!running && (fraction<=0 || fraction>=1);
+    $('pause').textContent=running?t('pause'):t('resume');
+    $('drawing-status').textContent=running?t('running'):(fraction>=1?t('full'):t('paused'));
+    $('progress').value=String(Math.round(fraction*1000));
+    $('progress').setAttribute('aria-valuetext',Math.round(fraction*100)+'%');
+    $('progress-value').value=Math.round(fraction*100)+'%';
+  }
+  function setLanguage(value) {
+    lang=value;
+    document.documentElement.lang=lang;
+    document.title=t('title')+' · Lissajous';
+    document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
+    $('lang-pl').setAttribute('aria-pressed',String(lang==='pl'));
+    $('lang-en').setAttribute('aria-pressed',String(lang==='en'));
+    $('drawing-canvas').setAttribute('aria-label',t('canvasLabel'));
+    $('speed').setAttribute('aria-label',t('speed'));
+    $('speed').title=t('speed');
+    $('pen-color').setAttribute('aria-label',t('color'));
+    $('phaseX-number').setAttribute('aria-label',t('phaseXLabel'));
+    $('phaseY-number').setAttribute('aria-label',t('phaseYLabel'));
+    $('cycles-number').setAttribute('aria-label',t('cyclesLabel'));
+    $('decayX-number').setAttribute('aria-label',t('dampingLabel'));
+    $('decayY-number').setAttribute('aria-label',t('dampingY'));
+    $('amplitudeX-number').setAttribute('aria-label',t('amplitudeX'));
+    $('amplitudeY-number').setAttribute('aria-label',t('amplitudeY'));
+    $('settings-file').setAttribute('aria-label',t('settingsFile'));
+    document.querySelectorAll('[data-color]').forEach((el,i)=>el.setAttribute('aria-label',t('colors')[i]));
+    document.querySelectorAll('[data-preset]').forEach(el=>{el.querySelector('span').textContent=t(el.dataset.preset);});
+    message('');
+    syncControls();syncTransport();persist();
+  }
+  function durationLimit(p) {
+    return Math.min(80,Math.floor(M.getTiming(p).maxCycles*10)/10);
+  }
+  function syncControls() {
+    const limit=durationLimit(params);
+    $('cycles').max=String(limit);$('cycles-number').max=String(limit);
+    document.querySelectorAll('[data-param]').forEach(el=>{
+      const value=params[el.dataset.param];
+      if(el!==document.activeElement)el.value=String(el.dataset.transform==='square'?Math.sqrt(value)*1000:value);
+      if(el.dataset.transform==='square')el.setAttribute('aria-valuetext',format(value,4));
+      el.removeAttribute('aria-invalid');
+    });
+    const phaseDifference=(Math.round((params.phaseYDeg-params.phaseXDeg+360)*10)%3600)/10;
+    const phaseText=format(phaseDifference,1)+'°';
+    $('phase-difference').value=String(phaseDifference);
+    $('phase-difference').setAttribute('aria-valuetext',phaseText);
+    $('phase-difference-value').value=phaseText;
+    $('pen-color').value=params.color;
+    $('separate-decay').checked=separateDecay;
+    $('decayY-control').hidden=!separateDecay;
+    $('decay-label').textContent=t(separateDecay?'dampingX':'damping');
+    $('width-value').value=format(params.penWidth,1);
+    $('ratio-badge').textContent=format(params.freqX,3)+' : '+format(params.freqY,3);
+    const ratioText=t('ratioNote')(format(params.freqY/params.freqX,4));
+    $('ratio-note').textContent=ratioText;
+    $('frequency-ratio').setAttribute('aria-valuetext',ratioText);
+    const percentX=format(Math.exp(-params.decayX*20)*100,1);
+    const percentY=separateDecay?format(Math.exp(-params.decayY*20)*100,1):null;
+    $('decay-note').textContent=t('decayNote')(percentX,percentY);
+    $('guides').checked=showGuides;$('speed').value=String(speed);
+    document.querySelectorAll('[data-ratio]').forEach(el=>{
+      const pair=el.dataset.ratio.split(',').map(Number);
+      el.setAttribute('aria-pressed',String(Math.abs(pair[1]/pair[0]-params.freqY/params.freqX)<1e-10));
+    });
+    document.querySelectorAll('[data-color]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.color.toLowerCase()===params.color.toLowerCase())));
+    document.querySelectorAll('[data-preset]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.preset===activePreset)));
+  }
+  function prepare(context,size,white) {
+    context.setTransform(size/1000,0,0,size/1000,0,0);
+    context.clearRect(0,0,1000,1000);
+    if(white){context.fillStyle='#ffffff';context.fillRect(0,0,1000,1000);}
+  }
+  function strokeRange(context,start,end,partial=false) {
+    if(!curve)return;
+    context.strokeStyle=params.color;context.fillStyle=params.color;
+    context.lineWidth=params.penWidth;context.lineCap='round';context.lineJoin='round';
+    const first=M.toCanvas(curve.points[start]);
+    context.beginPath();context.moveTo(first.x,first.y);
+    for(let i=start+1;i<=end;i++){const pt=M.toCanvas(curve.points[i]);context.lineTo(pt.x,pt.y);}
+    if(partial){const pt=M.toCanvas(M.pointAt(params,params.cycles*fraction));context.lineTo(pt.x,pt.y);}
+    context.stroke();
+    if(start===end&&!partial){context.beginPath();context.arc(first.x,first.y,params.penWidth/2,0,2*Math.PI);context.fill();}
+  }
+  function renderTrace() {
+    prepare(ctx,pixelSize,true);
+    if(!curve)return;
+    const end=Math.floor(fraction*(curve.points.length-1));
+    strokeRange(ctx,0,end,fraction>0&&fraction<1);
+    lastPainted=end;
+    renderMotion();syncTransport();
+  }
+  function renderMotion() {
+    prepare(motionCtx,pixelSize,false);
+    if(!curve)return;
+    const pt=M.toCanvas(M.pointAt(params,params.cycles*fraction));
+    if(showGuides) {
+      motionCtx.lineWidth=1.5;motionCtx.strokeStyle='#d5dfda';
+      motionCtx.beginPath();motionCtx.moveTo(80,48);motionCtx.lineTo(920,48);motionCtx.moveTo(48,80);motionCtx.lineTo(48,920);motionCtx.stroke();
+      motionCtx.setLineDash([5,7]);motionCtx.strokeStyle='#a9bdb4';motionCtx.beginPath();motionCtx.moveTo(pt.x,48);motionCtx.lineTo(pt.x,pt.y);motionCtx.lineTo(48,pt.y);motionCtx.stroke();motionCtx.setLineDash([]);
+      motionCtx.font='500 18px system-ui';motionCtx.textAlign='center';motionCtx.fillStyle='#7a558d';motionCtx.fillText('X',950,54);
+      motionCtx.beginPath();motionCtx.arc(pt.x,48,7,0,Math.PI*2);motionCtx.fill();
+      motionCtx.fillStyle='#197568';motionCtx.fillText('Y',48,960);
+      motionCtx.beginPath();motionCtx.arc(48,pt.y,7,0,Math.PI*2);motionCtx.fill();
+    }
+    if(running||fraction<1||showGuides) {
+      motionCtx.fillStyle='#fff';motionCtx.strokeStyle=params.color;motionCtx.lineWidth=3;
+      motionCtx.beginPath();motionCtx.arc(pt.x,pt.y,7,0,Math.PI*2);motionCtx.fill();motionCtx.stroke();
+    }
+  }
+  function resize() {
+    const width=$('canvas-wrap').getBoundingClientRect().width;
+    const next=Math.max(1,Math.min(2400,Math.round(width*(window.devicePixelRatio||1))));
+    if(next===pixelSize)return;
+    pixelSize=next;
+    canvas.width=canvas.height=next;motion.width=motion.height=next;
+    renderTrace();
+  }
+  function rebuild() {
+    refreshId=0;
+    curve=M.generateCurve(params);
+    fraction=1;
+    renderTrace();
+  }
+  function replaceParams(proposal,options={}) {
+    let next=M.normalizeParams(proposal);
+    if(!separateDecay)next=M.normalizeParams(Object.assign({},next,{decayY:next.decayX}));
+    const limit=durationLimit(next);
+    let limited=false;
+    if(next.cycles>limit){next=M.normalizeParams(Object.assign({},next,{cycles:limit}));limited=true;}
+    params=next;activePreset=options.preset||'';
+    stop();fraction=1;message(limited?t('maxDuration')(format(limit,1)):'');
+    syncControls();syncTransport();persist();
+    if(refreshId)cancelAnimationFrame(refreshId);
+    refreshId=requestAnimationFrame(rebuild);
+  }
+  function ensureCurve() {
+    if(refreshId){cancelAnimationFrame(refreshId);refreshId=0;curve=M.generateCurve(params);renderTrace();}
+    return curve;
+  }
+  function all() {
+    stop();ensureCurve();fraction=1;renderTrace();
+  }
+  function frame(now) {
+    if(!running)return;
+    if(previousTime!==null)fraction=Math.min(1,fraction+Math.min((now-previousTime)/1000,0.15)*speed/params.cycles);
+    previousTime=now;
+    const end=Math.floor(fraction*(curve.points.length-1));
+    if(end>lastPainted){strokeRange(ctx,lastPainted,end);lastPainted=end;}
+    renderMotion();syncTransport();
+    if(fraction>=1){stop();renderTrace();return;}
+    rafId=requestAnimationFrame(frame);
+  }
+  function start(fromBeginning) {
+    stop();ensureCurve();
+    if(fromBeginning||fraction>=1)fraction=0;
+    renderTrace();running=true;syncTransport();
+    rafId=requestAnimationFrame(frame);
+  }
+  function pause() {
+    if(running){stop();renderTrace();}
+    else if(fraction<1)start(false);
+  }
+  function download(blob,name) {
+    const link=document.createElement('a');
+    const url=URL.createObjectURL(blob);
+    link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+  }
+  function filename(extension) {
+    const ratio=String(params.freqX).replace('.','p')+'-'+String(params.freqY).replace('.','p');
+    return 'Harmonograph_'+ratio+'.'+extension;
+  }
+  function exportSVG() {
+    try {
+      ensureCurve();
+      const svg=M.exportSVG(params,curve,{title:t('title')+' · '+params.freqX+':'+params.freqY,description:t('exportText')+' © Paweł Dłotko'});
+      download(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),filename('svg'));
+      message(t('savedSVG'));
+    } catch(_){message(t('exportFailed'),true);}
+  }
+  function exportPNG() {
+    ensureCurve();
+    const output=document.createElement('canvas');output.width=output.height=2400;
+    const context=output.getContext('2d');prepare(context,2400,true);
+    strokeRange(context,0,curve.points.length-1);
+    const name=filename('png');
+    $('save-png').disabled=true;
+    output.toBlob(blob=>{
+      $('save-png').disabled=false;
+      if(blob){download(blob,name);message(t('savedPNG'));}
+      else message(t('exportFailed'),true);
+    },'image/png');
+  }
+  function saveSettings() {
+    const data={schemaVersion:1,model:'two-damped-orthogonal-oscillators-v1',timeUnit:'X-periods',params,separateDecay};
+    download(new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'}),filename('json'));
+    message(t('savedSettings'));
+  }
+  async function loadSettings(event) {
+    const file=event.target.files&&event.target.files[0];
+    if(!file)return;
+    try {
+      if(file.size>100000)throw new Error('large');
+      const data=JSON.parse(await file.text());
+      if(!data||!data.params||typeof data.params!=='object'||Array.isArray(data.params))throw new Error('invalid');
+      if(data.schemaVersion!==1||data.model!=='two-damped-orthogonal-oscillators-v1'||data.timeUnit!=='X-periods'||typeof data.separateDecay!=='boolean')throw new Error('invalid');
+      const next=M.normalizeParams(data.params);
+      if(M.getTiming(next).overBudget)throw new Error('invalid');
+      separateDecay=data.separateDecay;
+      replaceParams(next);message(t('loaded'));
+    } catch(error) {message(t(error.message==='large'?'fileLarge':'invalidFile'),true);}
+    event.target.value='';
+  }
+  function createPresets() {
+    const ns='http://www.w3.org/2000/svg';
+    PRESETS.forEach(preset=>{
+      const p=M.normalizeParams(Object.assign({},BASE,preset));
+      const generated=M.generateCurve(p);
+      const button=document.createElement('button');button.type='button';button.className='preset';button.dataset.preset=preset.id;
+      const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 1000 1000');svg.setAttribute('aria-hidden','true');
+      const path=document.createElementNS(ns,'path');
+      path.setAttribute('d',generated.points.map((point,i)=>{const q=M.toCanvas(point);return (i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1);}).join(''));
+      path.setAttribute('fill','none');path.setAttribute('stroke','#365d6e');path.setAttribute('stroke-width',preset.decayX?4:8);path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');
+      svg.appendChild(path);
+      const label=document.createElement('span');label.textContent=t(preset.id);button.append(svg,label);
+      button.addEventListener('click',()=>{
+        separateDecay=false;
+        replaceParams(Object.assign({},params,preset),{preset:preset.id});
+        if(window.innerWidth<=690)$('drawing-title').scrollIntoView({block:'start',behavior:'auto'});
+      });
+      $('presets').appendChild(button);
+    });
+  }
+  document.querySelectorAll('[data-param]').forEach(input=>{
+    const update=()=>{
+      const value=input.valueAsNumber;
+      if(!Number.isFinite(value))return;
+      const actual=input.dataset.transform==='square'?Math.round((value/1000)**2*1e6)/1e6:value;
+      const proposal=Object.assign({},params,{[input.dataset.param]:actual});
+      try {replaceParams(proposal);}
+      catch(_){input.setAttribute('aria-invalid','true');message(t('invalid'),true);}
+    };
+    input.addEventListener('input',update);
+    input.addEventListener('change',update);
+    input.addEventListener('blur',()=>{const value=params[input.dataset.param];input.value=String(input.dataset.transform==='square'?Math.sqrt(value)*1000:value);input.removeAttribute('aria-invalid');});
+  });
+  $('phase-difference').addEventListener('input',event=>{
+    replaceParams(Object.assign({},params,{phaseYDeg:params.phaseXDeg+event.target.valueAsNumber}));
+  });
+  document.querySelectorAll('[data-ratio]').forEach(button=>button.addEventListener('click',()=>{
+    const values=button.dataset.ratio.split(',').map(Number);replaceParams(Object.assign({},params,{freqX:values[0],freqY:values[1]}));
+  }));
+  document.querySelectorAll('[data-color]').forEach(button=>button.addEventListener('click',()=>replaceParams(Object.assign({},params,{color:button.dataset.color}),{preset:activePreset})));
+  $('pen-color').addEventListener('input',event=>replaceParams(Object.assign({},params,{color:event.target.value}),{preset:activePreset}));
+  $('separate-decay').addEventListener('change',event=>{separateDecay=event.target.checked;replaceParams(params);});
+  $('animate').addEventListener('click',()=>start(true));
+  $('pause').addEventListener('click',pause);
+  $('show-all').addEventListener('click',all);
+  $('progress').addEventListener('input',event=>{stop();ensureCurve();fraction=Number(event.target.value)/1000;renderTrace();});
+  $('speed').addEventListener('change',event=>{speed=Number(event.target.value);persist();});
+  $('guides').addEventListener('change',event=>{showGuides=event.target.checked;renderMotion();persist();});
+  $('lang-pl').addEventListener('click',()=>setLanguage('pl'));
+  $('lang-en').addEventListener('click',()=>setLanguage('en'));
+  $('save-svg').addEventListener('click',exportSVG);
+  $('save-png').addEventListener('click',exportPNG);
+  $('save-settings').addEventListener('click',saveSettings);
+  $('load-settings').addEventListener('click',()=>$('settings-file').click());
+  $('settings-file').addEventListener('change',loadSettings);
+  $('reset').addEventListener('click',()=>{separateDecay=false;showGuides=false;speed=4;replaceParams(BASE);});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&running){stop();renderTrace();}});
+  readStored();createPresets();setLanguage(lang);
+  curve=M.generateCurve(params);
+  resize();
+  if(typeof ResizeObserver==='function')new ResizeObserver(resize).observe($('canvas-wrap'));
+  else window.addEventListener('resize',resize);
+  window.addEventListener('resize',resize);
+  // The initial view and every parameter change show the complete drawing.
+  fraction=1;renderTrace();
+})();
+
+</script>
+</body>
+</html>
