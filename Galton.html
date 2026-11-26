@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="pl" data-default-language="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173d36">
+<meta name="description" content="Interaktywna deska Galtona: losowe odbicia kulek, dopasowanie rozkładu dwumianowego z asymetrią i porównanie z normalną. Samodzielny symulator PL / EN.">
+<title>Deska Galtona · od przypadku do rozkładu</title>
+<style>
+:root{color-scheme:light;--ink:#203c36;--muted:#61756f;--green:#173d36;--line:#dce5e1;--page:#f3f6f5;--accent:#365e91;--orange:#cb6743;--hist:#327965;--ring:#517db3;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink)}button,input,summary{font:inherit;touch-action:manipulation}button{min-height:42px;border:1px solid var(--line);border-radius:9px;padding:9px 13px;background:#fff;color:var(--ink);font-weight:650;cursor:pointer;transition:background .12s,border-color .12s}button:hover{background:#eaf1ee;border-color:#b1c5bc}button:disabled{opacity:.42;cursor:default}button.primary{color:#fff;background:var(--green);border-color:var(--green)}button.primary:hover{background:#24584b}button.quiet{background:transparent;border-color:transparent;font-weight:550}button:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--ring);outline-offset:3px}input[type=range]{accent-color:var(--green);min-width:0;width:100%;height:30px;cursor:pointer;margin:0}input[type=checkbox]{accent-color:var(--green);width:18px;height:18px;flex:none;margin:0}input[type=number]{width:100%;min-width:0;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 7px;min-height:40px;font-variant-numeric:tabular-nums}input[aria-invalid=true]{border-color:#b53e36}h1,h2,h3,p{margin:0}h1{font-size:1.4rem;letter-spacing:-.035em;line-height:1.2}h2{font-size:1.05rem;letter-spacing:-.015em}h3{font-size:1rem;margin-bottom:9px}a{color:#245e8d}button,[type=range],summary{-webkit-tap-highlight-color:transparent}[hidden]{display:none!important}
+.site-header{max-width:1280px;margin:auto;padding:22px 28px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;gap:13px;align-items:center}.brand-mark{width:46px;height:46px;flex:none}.brand p{margin-top:3px;font-size:.875rem;color:var(--muted)}.languages{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:12px;background:#fff}.languages button{padding:7px 12px;border:0;min-height:35px;font-size:.875rem}.languages button[aria-pressed=true]{background:var(--green);color:white}main{max-width:1280px;padding:0 28px;margin:auto}.app-grid{display:grid;grid-template-columns:minmax(0,1fr) 338px;gap:22px;align-items:start}.visual-column{min-width:0;display:grid;gap:18px}.visual,.fit-panel,.controls{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 5px 22px #183a2a04}.visual{padding:18px;min-width:0}.drawing-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px;padding:0 2px}.drawing-head h2{font-size:.875rem;font-weight:600;color:var(--muted)}.badge{background:#edf2f8;color:#345b81;border-radius:7px;padding:4px 10px;font-size:.875rem;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}.canvas-wrap{position:relative;aspect-ratio:1000/850;width:100%;margin:auto;background:#fff;overflow:hidden;border-radius:7px}.canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}.legend{display:flex;flex-wrap:wrap;gap:8px 17px;margin:4px 1px 14px;color:var(--muted);font-size:.8125rem;line-height:1.5}.legend span{display:inline-flex;align-items:center;gap:7px}.legend i{display:inline-block;flex:none;width:19px;height:3px;border-radius:2px;background:var(--orange)}.legend i.histogram{height:10px;width:12px;border-radius:2px;background:var(--hist)}.legend i.binomial{height:0;background:none;border-top:2px dashed var(--accent);border-radius:0}.transport{display:flex;gap:7px;flex-wrap:wrap;padding-top:13px;border-top:1px solid #edf1ee}.transport button{font-size:.875rem;padding:9px 11px}.transport .primary{flex:1}.progress-row{margin-top:13px;display:flex;gap:12px;align-items:center}.progress-row progress{appearance:none;-webkit-appearance:none;width:100%;height:7px;overflow:hidden;display:block;border:0;background:#e9efec;border-radius:8px}.progress-row progress::-webkit-progress-bar{background:#e9efec;border-radius:8px}.progress-row progress::-webkit-progress-value{background:var(--hist);border-radius:8px;transition:width .08s}.progress-row progress::-moz-progress-bar{background:var(--hist);border-radius:8px}.status{font-size:.8125rem;line-height:1.4;color:var(--muted);white-space:nowrap;text-align:right}.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}.counts>div{padding:9px 10px;background:#f4f7f5;border-radius:8px;display:flex;flex-direction:column;gap:2px}.counts dt{font-size:.8125rem;color:var(--muted);margin:0}.counts dd{margin:0;font-size:1.08rem;font-weight:650;font-variant-numeric:tabular-nums}.counts{margin-bottom:0}.controls{padding:20px}.controls>h2{margin-bottom:19px}.control{margin-bottom:19px}.control>label{display:block;font-weight:600;font-size:.875rem;margin-bottom:6px}.slider-row{display:flex;align-items:center;gap:12px;min-width:0}.slider-row>input[type=range]{flex:1}.number-wrap{display:flex;align-items:center;position:relative;flex:none;width:91px;min-width:0}.number-wrap input{font-size:.9375rem;text-align:right;padding-right:8px;appearance:textfield;-moz-appearance:textfield}.number-wrap.unit input{padding-right:26px}.number-wrap input::-webkit-inner-spin-button{appearance:none}.number-wrap span{position:absolute;right:8px;pointer-events:none;color:var(--muted);font-size:.875rem}.hint{font-size:.8125rem;line-height:1.5;color:var(--muted);margin-top:6px}.controls-hint{padding:10px 12px;background:#f1f5f3;border-radius:9px;margin-top:-2px;margin-bottom:17px}.display-section{border-top:1px solid var(--line);padding-top:15px}.display-section h3,.preset-section h3{font-size:.875rem;margin-bottom:11px}.checkbox{display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.875rem;line-height:1.4;min-height:32px;margin:4px 0}.checkbox .line-sample{margin-left:auto;width:24px;height:3px;flex:none;border-radius:2px;background:var(--orange)}.checkbox .line-sample.binomial{background:none;border-top:2px dashed var(--accent);height:0;border-radius:0}.preset-section{margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}.presets{display:grid;grid-template-columns:1fr 1fr;gap:7px}.presets button{font-size:.8125rem;min-height:39px;padding:7px 8px;font-weight:550}.presets button[aria-pressed=true]{border-color:#779c8a;background:#e9f1ed}.export-row{border-top:1px solid var(--line);padding-top:15px;display:flex;gap:7px;margin-top:17px}.export-row button{font-size:.875rem;flex:1;padding:8px 9px}.reset-row{text-align:center;margin-top:6px}.reset-row button{font-size:.8125rem;min-height:33px;padding:5px 10px}.message{padding:10px 12px;font-size:.875rem;line-height:1.5;background:#edf3fa;border-radius:9px;color:#284c74;margin-top:12px}.message.warning{background:#fff3e9;color:#8c4c28}.message.error{background:#fff1ed;color:#8e3827}
+.fit-panel{padding:20px}.fit-heading{display:flex;flex-wrap:wrap;justify-content:space-between;gap:9px;align-items:baseline;margin-bottom:14px}.fit-heading>p{font-size:.8125rem;color:var(--muted)}.fit-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0}.fit-values>div{padding:13px 14px;background:#f3f7f5;border-radius:10px;min-width:0}.fit-values dt{font-size:.8125rem;line-height:1.4;color:var(--muted);margin-bottom:5px}.fit-values dd{font-size:1.7rem;line-height:1.2;letter-spacing:-.03em;font-weight:650;font-variant-numeric:tabular-nums;margin:0;color:var(--green)}.fit-values dt b{font-family:Georgia,serif;font-size:1rem;font-weight:400;color:var(--ink)}.theory-row{display:flex;flex-wrap:wrap;gap:8px 23px;align-items:baseline;border-top:1px solid var(--line);padding-top:13px;margin-top:15px;font-size:.875rem}.theory-row .theory-title{color:var(--muted);margin-right:auto}.theory-row strong{font-weight:600;font-variant-numeric:tabular-nums}.fit-summary{font-family:Georgia,serif;font-size:1.1rem;padding-top:14px;line-height:1.6}.fit-panel .hint{margin-top:10px}.explanation{margin-top:22px}details{border-top:1px solid var(--line)}summary{font-weight:650;cursor:pointer;padding:17px 0;font-size:.9375rem;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}summary::-webkit-details-marker{display:none}summary:after{content:"+";font-size:1.2rem;font-weight:400;color:var(--muted)}details[open]>summary:after{content:"−"}.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px;padding:3px 0 22px}.help-grid p,.model-content p{font-size:.9375rem;line-height:1.65;margin-bottom:12px}.model-content{padding:0 0 17px;max-width:1050px}.equations{display:flex;flex-wrap:wrap;gap:11px 30px;padding:14px 18px;background:#eaf0ec;border-radius:10px;margin-bottom:14px;font-family:Georgia,serif}.equations p{font-size:1.1rem;margin:0;line-height:1.65}.equations .formula-long{flex-basis:100%}.model-content .hint{font-size:.875rem}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin:0 0 20px;background:#fff}.data-table{width:100%;border-collapse:collapse;font-size:.875rem;font-variant-numeric:tabular-nums;min-width:590px}.data-table caption{text-align:left;padding:13px 15px;color:var(--muted);font-size:.8125rem;line-height:1.5}.data-table th,.data-table td{text-align:right;padding:9px 15px;border-top:1px solid #e8eeea;white-space:nowrap}.data-table th:first-child,.data-table td:first-child{text-align:left}.data-table thead th{background:#eff4f1;font-weight:600}.data-table tbody tr:nth-child(even){background:#f8faf9}.data-table tbody tr:hover{background:#edf4f0}footer{max-width:1280px;padding:27px 28px 30px;margin:auto;color:var(--muted);font-size:.8125rem;display:flex;justify-content:space-between;gap:15px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}noscript{display:block;padding:25px;background:#fff3dc}
+@media(max-width:1050px){.app-grid{grid-template-columns:minmax(0,1fr) 300px;gap:16px}.site-header{padding:18px 20px}main{padding:0 20px}.controls{padding:17px 16px}.visual{padding:14px}.transport{gap:6px}.transport button{padding:8px 9px}.transport .primary{flex-basis:100%}.transport button:not(.primary){flex:1}.fit-panel{padding:17px}.fit-values>div{padding:12px 10px}.fit-values dd{font-size:1.45rem}.fit-values{gap:8px}.theory-row{gap:7px 16px}}
+@media(max-width:740px){.site-header{padding:15px 14px 14px}.brand-mark{width:40px;height:40px}.brand{gap:10px}h1{font-size:1.2rem}.brand p{font-size:.75rem}.languages button{padding:6px 9px}main{padding:0 12px}.app-grid{grid-template-columns:minmax(0,1fr);gap:15px}.visual-column{display:contents}.visual{order:0;padding:12px;border-radius:13px}.controls{order:1;border-radius:13px;padding:19px}.fit-panel{order:2;border-radius:13px;padding:18px}.drawing-head h2{font-size:.8125rem}.badge{font-size:.8125rem;padding:4px 8px}.transport .primary{flex-basis:auto}.transport{gap:6px}.transport button{font-size:.8125rem;padding:8px}.transport #clear-btn{flex-basis:100%;min-height:32px;border-color:transparent;padding:4px}.transport #pause-btn{flex:0}.transport #finish-btn{flex:1}.legend{gap:6px 12px;font-size:.75rem;margin-bottom:11px}.status{font-size:.75rem}.counts{gap:7px;margin-top:10px}.counts>div{padding:9px}.counts dt{font-size:.75rem}.counts dd{font-size:1rem}.control{margin-bottom:18px}.number-wrap{width:99px}.presets button{font-size:.875rem}.checkbox{min-height:36px}.help-grid{grid-template-columns:1fr;gap:12px}.equations{display:block;padding:12px 15px}.equations p{font-size:1rem;margin-bottom:5px}.fit-values dd{font-size:1.55rem}.fit-values dt{font-size:.75rem}.fit-heading>p{flex-basis:100%}.theory-row .theory-title{flex-basis:100%}footer{padding:24px 15px;flex-wrap:wrap}.explanation{margin-top:20px}}
+@media(max-width:390px){.brand p{max-width:165px;line-height:1.4}.brand-mark{width:35px;height:35px}.brand{gap:8px}.languages button{padding:6px 8px}.fit-values{gap:6px}.fit-values>div{padding:10px 8px}.fit-values dd{font-size:1.3rem}.transport button{padding:8px 7px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+@media print{.site-header,footer,.controls,.transport,.progress-row,.explanation{display:none!important}.app-grid{display:block}main{padding:0}.visual,.fit-panel{border:0;box-shadow:none;padding:0}.fit-panel{margin-top:20px}.canvas-wrap{width:100%}body{background:white}.visual-column{display:block}}
+.mobile-chart-note{display:none;margin:0 0 10px;color:var(--muted);font-size:.8125rem;line-height:1.45}@media(max-width:740px){.mobile-chart-note{display:block}}
+@media(max-width:740px){.transport{display:grid;grid-template-columns:1fr 1fr;gap:7px}.transport button{min-height:42px!important;padding:9px 8px!important}.transport #start-btn{order:0}.transport #finish-btn{order:1}.transport #pause-btn{order:2}.transport #clear-btn{order:3}}
+.legend i.normal,.checkbox .line-sample.normal{height:0;background:none;border-top:2px dashed #8a8999;border-radius:0}.fit-values{grid-template-columns:repeat(2,minmax(0,1fr))}.fit-values dt{font-size:.875rem}.empirical-row{border-top:0;margin-top:9px;padding-top:0}.fitted-variance{margin-top:10px;font-size:.875rem;color:var(--muted)}.fitted-variance strong{color:var(--ink);font-variant-numeric:tabular-nums}.presets [data-preset="skewed"]{grid-column:1/-1}.normal-note{border-left:3px solid #8a8999;background:#f4f3f6;color:#5f5e6b}.model-content h3{margin-top:21px}@media(min-width:1200px){.fit-values{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.fit-values>div{padding:12px 10px}.fit-values dd{font-size:1.45rem}}@media(max-width:740px){.fit-values{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fit-values dt{font-size:.8125rem}.legend{font-size:.8125rem;gap:6px 13px}.theory-row{line-height:1.7}.empirical-row .theory-title{flex-basis:100%}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><rect x="1" y="1" width="46" height="46" rx="13" fill="#173d36"/><g fill="#d9eee6"><circle cx="24" cy="10" r="1.7"/><circle cx="18" cy="18" r="1.7"/><circle cx="30" cy="18" r="1.7"/><circle cx="12" cy="26" r="1.7"/><circle cx="24" cy="26" r="1.7"/><circle cx="36" cy="26" r="1.7"/></g><path d="M10 38v-4h6v4m2 0V30h6v8m2 0V28h6v10m2 0v-5h5v5" fill="#91b9a9"/><circle cx="27" cy="13" r="2.3" fill="#edb97b"/></svg>
+    <div><h1 data-i18n="title">Deska Galtona</h1><p data-i18n="subtitle">Od losowych odbić do rozkładu wyników</p></div>
+  </div>
+  <nav class="languages" aria-label="Język / Language"><button id="lang-pl" type="button" aria-pressed="true">PL</button><button id="lang-en" type="button" aria-pressed="false">EN</button></nav>
+</header>
+<main>
+<div class="app-grid">
+  <div class="visual-column">
+    <section class="visual" aria-labelledby="board-title">
+      <div class="drawing-head"><h2 id="board-title" data-i18n="boardTitle">Twój eksperyment</h2><span id="board-badge" class="badge">20 rzędów · 21 kubełków</span></div>
+      <div class="canvas-wrap" id="canvas-wrap"><canvas id="board-canvas" width="1000" height="850" role="img" aria-label="Deska Galtona z kołkami i histogramem liczby kulek w kubełkach. Szczegółowe wyniki są dostępne w tabeli poniżej."><span data-i18n="canvasFallback">Deska Galtona i histogram wyników. Otwórz tabelę wyników poniżej, aby odczytać liczby kulek w poszczególnych kubełkach.</span></canvas></div>
+      <div class="legend" aria-hidden="true"><span><i class="histogram"></i><span data-i18n="drawLegend">Wynik losowania</span></span><span id="legend-fit"><i></i><span data-i18n="fittedLegend">Dopasowanie dwumianowe</span></span><span id="legend-binomial" hidden><i class="binomial"></i><span data-i18n="binomialLegend">Model z ustawionym p</span></span><span id="legend-normal" hidden><i class="normal"></i><span data-i18n="normalLegend">Normalna — porównanie</span></span></div>
+      <div class="transport"><button id="start-btn" class="primary" type="button" data-i18n="start">Animuj od początku</button><button id="pause-btn" type="button" disabled data-i18n="pause">Pauza</button><button id="finish-btn" type="button" data-i18n="finish">Pokaż cały wynik</button><button id="clear-btn" class="quiet" type="button" data-i18n="clear">Wyczyść</button></div>
+      <div class="progress-row"><label for="progress" class="sr-only" data-i18n="progressLabel">Postęp eksperymentu</label><progress id="progress" max="1" value="1"></progress><span id="status-text" class="status" role="status" aria-live="polite">Cały wynik</span></div>
+      <dl class="counts"><div><dt data-i18n="landed">W kubełkach</dt><dd id="landed-count">2 500</dd></div><div><dt data-i18n="flying">W locie</dt><dd id="flying-count">0</dd></div><div><dt data-i18n="remaining">Do wsypania</dt><dd id="remaining-count">0</dd></div></dl>
+    </section>
+    <section class="fit-panel" aria-labelledby="fit-title">
+      <div class="fit-heading"><h2 id="fit-title" data-i18n="normalFit">Dopasowanie uwzględniające asymetrię</h2><p id="sample-note">Parametry obliczone z 2 500 kulek</p></div>
+      <dl class="fit-values"><div><dt><span data-i18n="meanLabel">Średnia modelu</span> <b>μ̂</b></dt><dd id="fit-mean">—</dd></div><div><dt><span data-i18n="sdLabel">Odchylenie modelu</span> <b>σ̂</b></dt><dd id="fit-sd">—</dd></div><div><dt><span data-i18n="fitPLabel">Oszacowane p</span> <b>p̂</b></dt><dd id="fit-p">—</dd></div><div><dt><span data-i18n="fitSkewLabel">Skośność modelu</span> <b>γ̂</b></dt><dd id="fit-skewness">—</dd></div></dl>
+      <p id="fit-summary" class="fit-summary"></p>
+      <p class="fitted-variance"><span data-i18n="fittedVarianceLabel">Wariancja dopasowanego modelu</span>: σ̂² = <strong id="fit-variance">—</strong></p>
+      <div class="theory-row"><span class="theory-title" data-i18n="theoryLabel">Model z ustawionym p</span><span>μ = <strong id="theory-mean">10</strong></span><span>σ = <strong id="theory-sd">2,236</strong></span><span>γ = <strong id="theory-skewness">0</strong></span></div>
+      <div class="theory-row empirical-row"><span class="theory-title" data-i18n="empiricalLabel">Z danych</span><span><span data-i18n="empiricalSdLabel">odchylenie standardowe</span>: <strong id="empirical-sd">—</strong></span><span><span data-i18n="empiricalSkewLabel">skośność</span>: <strong id="empirical-skewness">—</strong></span></div>
+      <p id="fit-message" class="message" role="status">Dopasowany rozkład dwumianowy uwzględnia symetrię albo asymetrię zaobserwowanych wyników.</p>
+      <p id="normal-note" class="message normal-note" hidden></p>
+      <p class="hint" data-i18n="fitUnits">Kubełki numerujemy od 0; jednostką jest szerokość jednego kubełka. Pomarańczowy model dopasowujemy wyłącznie do kulek, które już dotarły na dół. Odchylenie i skośność modelu mogą różnić się od wartości obliczonych bezpośrednio z danych.</p>
+    </section>
+  </div>
+  <aside class="controls" aria-labelledby="controls-title">
+    <h2 id="controls-title" data-i18n="settings">Ustawienia</h2>
+    <div class="control"><label id="bins-label" for="bins" data-i18n="binsLabel">Liczba kubełków</label><div class="slider-row"><input id="bins" type="range" min="2" max="61" step="1" value="21" aria-labelledby="bins-label"><div class="number-wrap"><input id="bins-number" type="number" min="2" max="61" step="1" value="21" inputmode="numeric" aria-labelledby="bins-label"></div></div><p id="rows-note" class="hint">20 rzędów kołków · kubełków zawsze o jeden więcej.</p></div>
+    <div class="control"><label id="probability-label" for="probability" data-i18n="probabilityLabel">Prawdopodobieństwo skrętu w prawo</label><div class="slider-row"><input id="probability" type="range" min="0" max="100" step="1" value="50" aria-labelledby="probability-label"><div class="number-wrap unit"><input id="probability-number" type="number" min="0" max="100" step="1" value="50" inputmode="numeric" aria-labelledby="probability-label"><span>%</span></div></div><p id="probability-note" class="hint">W lewo: 50% · w prawo: 50%</p></div>
+    <div class="control"><label id="rate-label" for="rate" data-i18n="rateLabel">Tempo wsypywania</label><div class="slider-row"><input id="rate" type="range" min="1" max="300" step="1" value="40" aria-labelledby="rate-label"><div class="number-wrap"><input id="rate-number" type="number" min="1" max="300" step="1" value="40" inputmode="numeric" aria-labelledby="rate-label"></div></div><p class="hint" data-i18n="rateUnit">Kulek na sekundę. Możesz zmieniać w trakcie animacji.</p></div>
+    <div class="control"><label id="total-label" for="total" data-i18n="totalLabel">Łączna liczba kulek</label><div class="slider-row"><input id="total" type="range" min="1" max="100000" step="1" value="2500" aria-labelledby="total-label"><div class="number-wrap"><input id="total-number" type="number" min="1" max="100000" step="1" value="2500" inputmode="numeric" aria-labelledby="total-label"></div></div><p id="duration-note" class="hint">Wsypywanie zajmie około 63 s.</p></div>
+    <p class="hint controls-hint" data-i18n="controlsHint">Zmiana liczby kubełków, prawdopodobieństwa lub liczby kulek przygotowuje nowy eksperyment. Tempo możesz zmieniać na żywo.</p>
+    <section class="display-section" aria-labelledby="display-title"><h3 id="display-title" data-i18n="displayLabel">Na wykresie</h3><label class="checkbox"><input id="show-fit" type="checkbox" checked><span data-i18n="showFit">Dopasowanie dwumianowe</span><i class="line-sample" aria-hidden="true"></i></label><label class="checkbox"><input id="show-binomial" type="checkbox"><span data-i18n="showBinomial">Model z ustawionym p</span><i class="line-sample binomial" aria-hidden="true"></i></label><label class="checkbox"><input id="show-normal" type="checkbox"><span data-i18n="showNormal">Normalna — porównanie</span><i class="line-sample normal" aria-hidden="true"></i></label><label class="checkbox"><input id="show-trail" type="checkbox"><span data-i18n="showTrail">Ślad jednej kulki</span></label><label class="checkbox"><input id="show-counts" type="checkbox" checked><span data-i18n="showCounts">Liczby kulek nad słupkami</span></label></section>
+    <section class="preset-section" aria-labelledby="presets-title"><h3 id="presets-title" data-i18n="presetsHeading">Porównaj przykłady</h3><div class="presets"><button type="button" data-preset="symmetric" aria-pressed="true" data-i18n="presetSymmetric">Symetrycznie</button><button type="button" data-preset="bias" aria-pressed="false" data-i18n="presetBias">Przewaga prawej</button><button type="button" data-preset="few" aria-pressed="false" data-i18n="presetFew">Mało rzędów</button><button type="button" data-preset="many" aria-pressed="false" data-i18n="presetMany">Dużo rzędów</button><button type="button" data-preset="skewed" aria-pressed="false" data-i18n="presetSkewed">Silna asymetria (95%)</button></div></section>
+    <div class="export-row"><button id="save-png" type="button" data-i18n="savePNG">Zapisz PNG</button><button id="save-csv" type="button" data-i18n="saveCSV">Wyniki CSV</button></div><div class="reset-row"><button id="reset-btn" class="quiet" type="button" data-i18n="reset">Przywróć ustawienia</button></div>
+    <p id="message" class="message" role="status" hidden></p>
+  </aside>
+</div>
+<section class="explanation">
+  <details id="how-to"><summary data-i18n="howTitle">Jak korzystać z symulatora?</summary><div class="help-grid"><div><h3 data-i18n="tryTitle">Zobacz, jak powstaje rozkład</h3><p data-i18n="howStart">Na początku widzisz cały wynik losowego eksperymentu. Wybierz „Animuj od początku”, aby obserwować spadanie kulek, albo „Pokaż cały wynik”, aby od razu zobaczyć końcowy histogram.</p><p data-i18n="howControls">Zmieniaj liczbę kubełków, szansę skrętu w prawo i liczbę kulek. Suwaki oraz pola liczbowe są ze sobą powiązane. Pauza zatrzymuje animację; tempo wsypywania określa liczbę nowych kulek na sekundę.</p></div><div><h3 data-i18n="compareTitle">Jak zobaczyć asymetrię?</h3><p data-i18n="howCompare">Wybierz „Silna asymetria (95%)”. Większość kulek trafi do prawej części deski, a dłuższy ogon rozkładu pozostanie po lewej. Pomarańczowe dopasowanie dwumianowe uwzględnia tę asymetrię. Dla porównania włącz normalną, która zawsze jest symetryczna.</p><p data-i18n="howSample">Więcej kulek zmniejsza losowe wahania histogramu. Zmiana liczby rzędów lub prawdopodobieństwa zmienia sam rozkład. Parametr p̂ dopasowania jest oszacowaniem z wyników; granatowy model korzysta z p ustawionego suwakiem.</p></div></div></details>
+  <details id="model"><summary data-i18n="modelTitle">Model matematyczny i dopasowanie</summary><div class="model-content"><p data-i18n="modelIntro">Każda kulka w każdym rzędzie niezależnie skręca w prawo z prawdopodobieństwem p, a w lewo z prawdopodobieństwem 1 − p. Przy n rzędach jest n + 1 kubełków. Numer kubełka K jest liczbą skrętów w prawo.</p><div class="equations"><p>K ∼ Bin(n, p)</p><p>E[K] = np</p><p>SD[K] = √(np(1 − p))</p></div><p data-i18n="modelParameters">Kubełki mają numery k = 0, 1, …, n. Model dwumianowy daje P(K = k) = C(n, k) pᵏ(1 − p)ⁿ⁻ᵏ. Granatowe punkty odpowiadają p ustawionemu suwakiem. Wszystkie liczby oczekiwane skalujemy do N, liczby kulek, które już dotarły do kubełków.</p><h3 data-i18n="showFit">Dopasowanie dwumianowe</h3><p data-i18n="modelFit">Pomarańczowe dopasowanie wykorzystuje znaną liczbę rzędów n, a prawdopodobieństwo p̂ szacuje z obserwowanych liczebności cₖ. Estymator największej wiarygodności to p̂ = Σₖ k cₖ / (nN). Nie korzysta z p ustawionego suwakiem. Średnia dopasowanego modelu jest równa średniej z danych; jego wariancja i skośność wynikają z modelu Bin(n, p̂).</p><div class="equations"><p>p̂ = (1/(nN)) ∑ₖ k cₖ</p><p>μ̂ = np̂</p><p>σ̂² = np̂(1 − p̂)</p><p>γ̂ = (1 − 2p̂) / √(np̂(1 − p̂))</p></div><p data-i18n="modelFittedShape">Pomarańczowe punkty mają wysokość N · P(K = k) dla dopasowanego Bin(n, p̂). Gładka linia jedynie łączy te punkty, ułatwiając odczyt kształtu. Model pozostaje dyskretny; wartości tej linii między kubełkami nie są ciągłą gęstością prawdopodobieństwa.</p><h3 data-i18n="empiricalLabel">Z danych</h3><p data-i18n="modelEmpirical">Osobno pokazujemy odchylenie i skośność empiryczną, obliczone z momentów centralnych danych z dzielnikiem N. Nie stosujemy poprawek na obciążenie. Te wielkości mogą różnić się od parametrów dopasowanego modelu. Skośność nie jest określona, jeśli odpowiednie odchylenie standardowe wynosi 0.</p><div class="equations"><p>μ̄ = (1/N) ∑ₖ k cₖ</p><p>s² = (1/N) ∑ₖ cₖ(k − μ̄)²</p><p>g₁ = (1/N) ∑ₖ cₖ(k − μ̄)³ / s³</p></div><h3 data-i18n="showNormal">Normalna — porównanie</h3><p data-i18n="modelNormal">Opcjonalna szara krzywa normalna jest symetrycznym porównaniem: jej średnia μ̄ i odchylenie s pochodzą bezpośrednio z danych. Nie korzysta z odchylenia dopasowanego modelu dwumianowego. Jeżeli s = 0, tej krzywej nie rysujemy.</p><div class="equations"><p class="formula-long">y(x) = N / (s√(2π)) · exp(−(x − μ̄)² / (2s²))</p></div><p data-i18n="modelCounts">Szara linia normalna pokazuje N razy ciągłą gęstość, przy jednostkowej szerokości kubełka. W tabeli i pliku CSV oczekiwaną liczbę dla normalnej obliczamy jako całkę od k − ½ do k + ½. Nie obcinamy ani nie przeskalowujemy normalnej do skończonego zakresu deski. Pomarańczowe dopasowanie i granatowy model teoretyczny używają bezpośrednio prawdopodobieństw poszczególnych kubełków.</p><p data-i18n="modelLimits">Model dwumianowy opisuje założone niezależne wybory w kolejnych rzędach, także gdy rozkład jest skośny. Mała próbka może dać niestabilne oszacowanie p̂. Przy p̂ = 0 lub 1 dopasowanie skupia się w skrajnym kubełku, odchylenie wynosi 0, a skośność nie jest określona. Normalna może być słabym przybliżeniem przy niewielu rzędach lub skrajnym p. Komunikaty pod wykresem nie są testem zgodności.</p><p class="hint" data-i18n="physicalModel">To schemat niezależnych losowych wyborów na kołkach. Animacja ilustruje ten model; nie symuluje zderzeń między kulkami ani pełnej mechaniki rzeczywistej deski.</p></div></details>
+  <details id="data-details"><summary data-i18n="dataTitle">Tabela wyników</summary><div class="table-wrap"><table class="data-table"><caption id="data-caption" data-i18n="dataCaption">Liczby oczekiwane odnoszą się do N kulek w kubełkach. Dopasowanie: Bin(n, p̂) z danych; teoria: Bin(n, p) z ustawień; normalna: całka po k ± ½.</caption><thead><tr><th scope="col" data-i18n="headerBin">Kubełek k</th><th scope="col" data-i18n="headerObserved">Liczba kulek</th><th scope="col" data-i18n="headerFitted">Oczekiwane: dopasowanie</th><th scope="col" data-i18n="headerBinomial">Oczekiwane: ustawione p</th><th scope="col" data-i18n="headerNormal">Oczekiwane: normalna</th></tr></thead><tbody id="data-body"></tbody></table></div></details>
+</section>
+</main>
+<footer><span>© Paweł Dłotko</span><span data-i18n="offline">Działa także bez internetu.</span></footer>
+<noscript>Włącz JavaScript, aby używać symulatora. / Enable JavaScript to use the simulator.</noscript>
+<script>
+window.GALTON_TEXTS={
+  "pl": {
+    "title": "Deska Galtona",
+    "subtitle": "Od losowych odbić do rozkładu wyników",
+    "pageTitle": "Deska Galtona · od przypadku do rozkładu",
+    "boardTitle": "Twój eksperyment",
+    "settings": "Ustawienia",
+    "binsLabel": "Liczba kubełków",
+    "probabilityLabel": "Prawdopodobieństwo skrętu w prawo",
+    "rateLabel": "Tempo wsypywania",
+    "rateUnit": "Kulek na sekundę. Możesz zmieniać w trakcie animacji.",
+    "totalLabel": "Łączna liczba kulek",
+    "controlsHint": "Zmiana liczby kubełków, prawdopodobieństwa lub liczby kulek przygotowuje nowy eksperyment. Tempo możesz zmieniać na żywo.",
+    "displayLabel": "Na wykresie",
+    "showNormal": "Normalna — porównanie",
+    "showBinomial": "Model z ustawionym p",
+    "showTrail": "Ślad jednej kulki",
+    "showCounts": "Liczby kulek nad słupkami",
+    "drawLegend": "Wynik losowania",
+    "normalLegend": "Normalna — porównanie",
+    "binomialLegend": "Model z ustawionym p",
+    "start": "Animuj od początku",
+    "pause": "Pauza",
+    "resume": "Wznów",
+    "finish": "Pokaż cały wynik",
+    "clear": "Wyczyść",
+    "progressLabel": "Postęp eksperymentu",
+    "landed": "W kubełkach",
+    "flying": "W locie",
+    "remaining": "Do wsypania",
+    "normalFit": "Dopasowanie uwzględniające asymetrię",
+    "meanLabel": "Średnia modelu",
+    "sdLabel": "Odchylenie modelu",
+    "varianceLabel": "Wariancja",
+    "theoryLabel": "Model z ustawionym p",
+    "fitUnits": "Kubełki numerujemy od 0; jednostką jest szerokość jednego kubełka. Pomarańczowy model dopasowujemy wyłącznie do kulek, które już dotarły na dół. Odchylenie i skośność modelu mogą różnić się od wartości obliczonych bezpośrednio z danych.",
+    "presetsHeading": "Porównaj przykłady",
+    "presetSymmetric": "Symetrycznie",
+    "presetBias": "Przewaga prawej",
+    "presetFew": "Mało rzędów",
+    "presetMany": "Dużo rzędów",
+    "savePNG": "Zapisz PNG",
+    "saveCSV": "Wyniki CSV",
+    "reset": "Przywróć ustawienia",
+    "howTitle": "Jak korzystać z symulatora?",
+    "tryTitle": "Zobacz, jak powstaje rozkład",
+    "howStart": "Na początku widzisz cały wynik losowego eksperymentu. Wybierz „Animuj od początku”, aby obserwować spadanie kulek, albo „Pokaż cały wynik”, aby od razu zobaczyć końcowy histogram.",
+    "howControls": "Zmieniaj liczbę kubełków, szansę skrętu w prawo i liczbę kulek. Suwaki oraz pola liczbowe są ze sobą powiązane. Pauza zatrzymuje animację; tempo wsypywania określa liczbę nowych kulek na sekundę.",
+    "compareTitle": "Jak zobaczyć asymetrię?",
+    "howCompare": "Wybierz „Silna asymetria (95%)”. Większość kulek trafi do prawej części deski, a dłuższy ogon rozkładu pozostanie po lewej. Pomarańczowe dopasowanie dwumianowe uwzględnia tę asymetrię. Dla porównania włącz normalną, która zawsze jest symetryczna.",
+    "howSample": "Więcej kulek zmniejsza losowe wahania histogramu. Zmiana liczby rzędów lub prawdopodobieństwa zmienia sam rozkład. Parametr p̂ dopasowania jest oszacowaniem z wyników; granatowy model korzysta z p ustawionego suwakiem.",
+    "modelTitle": "Model matematyczny i dopasowanie",
+    "modelIntro": "Każda kulka w każdym rzędzie niezależnie skręca w prawo z prawdopodobieństwem p, a w lewo z prawdopodobieństwem 1 − p. Przy n rzędach jest n + 1 kubełków. Numer kubełka K jest liczbą skrętów w prawo.",
+    "modelParameters": "Kubełki mają numery k = 0, 1, …, n. Model dwumianowy daje P(K = k) = C(n, k) pᵏ(1 − p)ⁿ⁻ᵏ. Granatowe punkty odpowiadają p ustawionemu suwakiem. Wszystkie liczby oczekiwane skalujemy do N, liczby kulek, które już dotarły do kubełków.",
+    "modelFit": "Pomarańczowe dopasowanie wykorzystuje znaną liczbę rzędów n, a prawdopodobieństwo p̂ szacuje z obserwowanych liczebności cₖ. Estymator największej wiarygodności to p̂ = Σₖ k cₖ / (nN). Nie korzysta z p ustawionego suwakiem. Średnia dopasowanego modelu jest równa średniej z danych; jego wariancja i skośność wynikają z modelu Bin(n, p̂).",
+    "modelCounts": "Szara linia normalna pokazuje N razy ciągłą gęstość, przy jednostkowej szerokości kubełka. W tabeli i pliku CSV oczekiwaną liczbę dla normalnej obliczamy jako całkę od k − ½ do k + ½. Nie obcinamy ani nie przeskalowujemy normalnej do skończonego zakresu deski. Pomarańczowe dopasowanie i granatowy model teoretyczny używają bezpośrednio prawdopodobieństw poszczególnych kubełków.",
+    "modelLimits": "Model dwumianowy opisuje założone niezależne wybory w kolejnych rzędach, także gdy rozkład jest skośny. Mała próbka może dać niestabilne oszacowanie p̂. Przy p̂ = 0 lub 1 dopasowanie skupia się w skrajnym kubełku, odchylenie wynosi 0, a skośność nie jest określona. Normalna może być słabym przybliżeniem przy niewielu rzędach lub skrajnym p. Komunikaty pod wykresem nie są testem zgodności.",
+    "physicalModel": "To schemat niezależnych losowych wyborów na kołkach. Animacja ilustruje ten model; nie symuluje zderzeń między kulkami ani pełnej mechaniki rzeczywistej deski.",
+    "dataTitle": "Tabela wyników",
+    "dataCaption": "Liczby oczekiwane odnoszą się do N kulek w kubełkach. Dopasowanie: Bin(n, p̂) z danych; teoria: Bin(n, p) z ustawień; normalna: całka po k ± ½.",
+    "headerBin": "Kubełek k",
+    "headerObserved": "Liczba kulek",
+    "headerBinomial": "Oczekiwane: ustawione p",
+    "headerNormal": "Oczekiwane: normalna",
+    "offline": "Działa także bez internetu.",
+    "canvasFallback": "Deska Galtona i histogram wyników. Otwórz tabelę wyników poniżej, aby odczytać liczby kulek w poszczególnych kubełkach.",
+    "canvasLabel": "Deska Galtona z kołkami i histogramem liczby kulek w kubełkach. Szczegółowe wyniki są dostępne w tabeli poniżej.",
+    "boardBadge": "{n} rzędów · {bins} kubełków",
+    "rowsNote": "Rzędy kołków: {n}. Kubełków jest zawsze o jeden więcej.",
+    "probabilityNote": "W lewo: {left}% · w prawo: {right}%",
+    "durationNote": "Czas wsypywania: około {duration}.",
+    "sampleNote": "Parametry obliczone z {N} kulek",
+    "sampleEmpty": "Czekamy na pierwsze kulki",
+    "statusComplete": "Cały wynik",
+    "statusReady": "Gotowe do startu",
+    "statusRunning": "Kulki spadają",
+    "statusPaused": "Pauza",
+    "statusFinishing": "Kończymy eksperyment…",
+    "statusDraining": "Ostatnie kulki w locie",
+    "fitEmpty": "Uruchom eksperyment lub pokaż cały wynik, aby dopasować rozkład dwumianowy.",
+    "fitDegenerate": "Oszacowane p̂ wynosi 0 lub 1: dopasowany model skupia całą masę w skrajnym kubełku. Jego odchylenie wynosi 0, a skośność nie jest określona.",
+    "fitPoor": "Przy tych ustawieniach przybliżenie normalne może być słabe. Porównaj pomarańczową krzywą z dokładnym rozkładem dwumianowym.",
+    "fitBorderline": "Przybliżenie normalne jest orientacyjne. Więcej rzędów i mniej skrajne prawdopodobieństwo zwykle poprawiają jego jakość.",
+    "fitReasonable": "Te ustawienia sprzyjają przybliżeniu normalnemu. Różnice między słupkami a krzywą zależą także od liczby wylosowanych kulek.",
+    "fitSmallSample": "Dopasowanie korzysta z małej liczby kulek. Oszacowanie p̂ oraz parametry modelu mogą się jeszcze wyraźnie zmieniać.",
+    "fitOutside": "Masa dopasowanej normalnej poza zakresem kubełków: {percent}%.",
+    "binAxis": "Numer kubełka k = liczba skrętów w prawo",
+    "countAxis": "Liczba kulek",
+    "leftLabel": "w lewo",
+    "rightLabel": "w prawo",
+    "emptyBoard": "Uruchom animację lub pokaż cały wynik",
+    "csvSaved": "Zapisano wyniki do pliku CSV.",
+    "pngSaved": "Zapisano obraz do pliku PNG.",
+    "exportError": "Nie udało się zapisać pliku. Spróbuj ponownie.",
+    "seconds": "{value} s",
+    "minutes": "{value} min",
+    "hours": "{value} h",
+    "normalUnavailable": "Normalna jest niedostępna: brak danych lub odchylenie z danych wynosi 0.",
+    "pngTitle": "Deska Galtona",
+    "pngParameters": "{n} rzędów · p(prawo) = {p} · N = {N}",
+    "pngFit": "Dopasowanie: p̂ = {p}; μ̂ = {mean}; σ̂ = {sd}; γ̂ = {skew}",
+    "showFit": "Dopasowanie dwumianowe",
+    "fittedLegend": "Dopasowanie dwumianowe",
+    "fitPLabel": "Oszacowane p",
+    "fitSkewLabel": "Skośność modelu",
+    "fittedVarianceLabel": "Wariancja dopasowanego modelu",
+    "empiricalLabel": "Z danych",
+    "empiricalSdLabel": "odchylenie standardowe",
+    "empiricalSkewLabel": "skośność",
+    "presetSkewed": "Silna asymetria (95%)",
+    "modelFittedShape": "Pomarańczowe punkty mają wysokość N · P(K = k) dla dopasowanego Bin(n, p̂). Gładka linia jedynie łączy te punkty, ułatwiając odczyt kształtu. Model pozostaje dyskretny; wartości tej linii między kubełkami nie są ciągłą gęstością prawdopodobieństwa.",
+    "modelEmpirical": "Osobno pokazujemy odchylenie i skośność empiryczną, obliczone z momentów centralnych danych z dzielnikiem N. Nie stosujemy poprawek na obciążenie. Te wielkości mogą różnić się od parametrów dopasowanego modelu. Skośność nie jest określona, jeśli odpowiednie odchylenie standardowe wynosi 0.",
+    "modelNormal": "Opcjonalna szara krzywa normalna jest symetrycznym porównaniem: jej średnia μ̄ i odchylenie s pochodzą bezpośrednio z danych. Nie korzysta z odchylenia dopasowanego modelu dwumianowego. Jeżeli s = 0, tej krzywej nie rysujemy.",
+    "headerFitted": "Oczekiwane: dopasowanie",
+    "fitWaiting": "Czekamy na pierwszą kulkę w kubełku. Dopasowanie wykorzysta zebrane liczebności.",
+    "fitSymmetric": "Skośność dopasowanego rozkładu jest niewielka; jego kształt jest prawie symetryczny.",
+    "fitLeftTail": "Dopasowanie ma dłuższy ogon po lewej stronie: skośność jest ujemna. Większość kulek trafia do prawej części deski.",
+    "fitRightTail": "Dopasowanie ma dłuższy ogon po prawej stronie: skośność jest dodatnia. Większość kulek trafia do lewej części deski.",
+    "fitModelHint": "Pomarańczowa linia łączy punkty dopasowanego rozkładu dwumianowego. Model uwzględnia asymetrię; nie jest ciągłą gęstością.",
+    "normalComparisonNote": "Normalna jest wyłącznie symetrycznym porównaniem. Jej średnia i odchylenie pochodzą z danych, a krzywa nie odtwarza skośności.",
+    "normalOutside": "Masa dopasowanej normalnej poza zakresem kubełków: {percent}%.",
+    "fitSummary": "K ∼ Bin({n}, p̂ = {p})",
+    "pngEmpirical": "Z danych: s = {sd}; skośność = {skew}"
+  },
+  "en": {
+    "title": "Galton board",
+    "subtitle": "From random bounces to a distribution",
+    "pageTitle": "Galton board · from chance to a distribution",
+    "boardTitle": "Your experiment",
+    "settings": "Settings",
+    "binsLabel": "Number of bins",
+    "probabilityLabel": "Probability of turning right",
+    "rateLabel": "Ball release rate",
+    "rateUnit": "Balls per second. Adjustable during the animation.",
+    "totalLabel": "Total number of balls",
+    "controlsHint": "Changing the number of bins, the probability or the ball count prepares a new experiment. The release rate can change live.",
+    "displayLabel": "On the chart",
+    "showNormal": "Normal — comparison",
+    "showBinomial": "Model with selected p",
+    "showTrail": "Trace one ball",
+    "showCounts": "Show counts above bars",
+    "drawLegend": "Random sample",
+    "normalLegend": "Normal — comparison",
+    "binomialLegend": "Model with selected p",
+    "start": "Animate from the start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "finish": "Show full result",
+    "clear": "Clear",
+    "progressLabel": "Experiment progress",
+    "landed": "In bins",
+    "flying": "In flight",
+    "remaining": "Not yet released",
+    "normalFit": "Fitting that captures skewness",
+    "meanLabel": "Model mean",
+    "sdLabel": "Model standard deviation",
+    "varianceLabel": "Variance",
+    "theoryLabel": "Model with selected p",
+    "fitUnits": "Bins are numbered from 0; one unit is one bin width. The orange model is fitted only to balls that have already landed. Its standard deviation and skewness can differ from the values calculated directly from the data.",
+    "presetsHeading": "Compare examples",
+    "presetSymmetric": "Symmetric",
+    "presetBias": "Rightward bias",
+    "presetFew": "Few rows",
+    "presetMany": "Many rows",
+    "savePNG": "Save PNG",
+    "saveCSV": "Results CSV",
+    "reset": "Reset settings",
+    "howTitle": "How do I use the simulator?",
+    "tryTitle": "Watch a distribution emerge",
+    "howStart": "The page initially shows the complete result of a random experiment. Choose “Animate from the start” to watch the balls fall, or “Show full result” to display the final histogram immediately.",
+    "howControls": "Change the number of bins, the probability of turning right and the ball count. Sliders and number fields stay in sync. Pause stops the animation; the release rate controls how many new balls enter per second.",
+    "compareTitle": "How can I see the skewness?",
+    "howCompare": "Choose “Strong skew (95%)”. Most balls will land on the right, with a longer tail on the left. The orange binomial fit captures this asymmetry. Turn on the normal curve for comparison: it is always symmetric.",
+    "howSample": "More balls reduce random fluctuations in the histogram. Changing the number of rows or the probability changes the underlying distribution. The fitted p̂ is estimated from the results; the navy model uses the p selected with the slider.",
+    "modelTitle": "Mathematical model and fitting",
+    "modelIntro": "At each row, every ball independently turns right with probability p and left with probability 1 − p. With n rows there are n + 1 bins. The bin index K is the number of right turns.",
+    "modelParameters": "Bins are indexed k = 0, 1, …, n. The binomial model gives P(K = k) = C(n, k) pᵏ(1 − p)ⁿ⁻ᵏ. The navy points use the p selected with the slider. All expected counts are scaled to N, the number of balls that have already landed.",
+    "modelFit": "The orange fit uses the known number of rows n and estimates p̂ from the observed counts cₖ. The maximum likelihood estimate is p̂ = Σₖ k cₖ / (nN). It does not use the p selected with the slider. The fitted model mean equals the empirical mean; its variance and skewness are those of Bin(n, p̂).",
+    "modelCounts": "The gray normal line shows N times a continuous density, for unit bin width. In the table and CSV file, its expected count is the integral from k − ½ to k + ½. The normal distribution is not truncated or renormalized to the finite board range. The orange fit and navy theoretical model use the bin probabilities directly.",
+    "modelLimits": "The binomial model describes the assumed independent choices at successive rows, including skewed distributions. A small sample can give an unstable estimate of p̂. At p̂ = 0 or 1, the fit places all mass in an extreme bin, its standard deviation is 0, and its skewness is undefined. The normal approximation can be poor with few rows or extreme p. Guidance below the chart is not a goodness-of-fit test.",
+    "physicalModel": "This is a model of independent random choices at the pegs. The animation illustrates this model; it does not simulate collisions between balls or the full mechanics of a physical board.",
+    "dataTitle": "Results table",
+    "dataCaption": "Expected counts refer to N balls in the bins. Fit: Bin(n, p̂) estimated from data; theory: Bin(n, p) from settings; normal: integral over k ± ½.",
+    "headerBin": "Bin k",
+    "headerObserved": "Ball count",
+    "headerBinomial": "Expected: selected p",
+    "headerNormal": "Expected: normal",
+    "offline": "Works offline, too.",
+    "canvasFallback": "Galton board and histogram. Open the results table below to read the number of balls in each bin.",
+    "canvasLabel": "Galton board with pegs and a histogram of the number of balls in each bin. Detailed results are available in the table below.",
+    "boardBadge": "{n} rows · {bins} bins",
+    "rowsNote": "Peg rows: {n}. There is always one more bin than rows.",
+    "probabilityNote": "Left: {left}% · right: {right}%",
+    "durationNote": "Release time: about {duration}.",
+    "sampleNote": "Parameters estimated from {N} balls",
+    "sampleEmpty": "Waiting for the first balls",
+    "statusComplete": "Full result",
+    "statusReady": "Ready to start",
+    "statusRunning": "Balls are falling",
+    "statusPaused": "Paused",
+    "statusFinishing": "Finishing the experiment…",
+    "statusDraining": "Last balls in flight",
+    "fitEmpty": "Start an experiment or show the full result to fit the binomial distribution.",
+    "fitDegenerate": "The estimated p̂ is 0 or 1: the fitted model places all mass in an extreme bin. Its standard deviation is 0 and its skewness is undefined.",
+    "fitPoor": "With these settings the normal approximation may be poor. Compare the orange curve with the exact binomial distribution.",
+    "fitBorderline": "The normal approximation is indicative. More rows and less extreme probabilities generally improve it.",
+    "fitReasonable": "These settings favor a normal approximation. Differences between the bars and the curve also depend on the number of sampled balls.",
+    "fitSmallSample": "The fit uses few balls. The estimate of p̂ and the model parameters may still change considerably.",
+    "fitOutside": "Fitted normal probability outside the bin range: {percent}%.",
+    "binAxis": "Bin index k = number of right turns",
+    "countAxis": "Number of balls",
+    "leftLabel": "left",
+    "rightLabel": "right",
+    "emptyBoard": "Start the animation or show the full result",
+    "csvSaved": "Results saved as a CSV file.",
+    "pngSaved": "Image saved as a PNG file.",
+    "exportError": "The file could not be saved. Please try again.",
+    "seconds": "{value} s",
+    "minutes": "{value} min",
+    "hours": "{value} h",
+    "normalUnavailable": "The normal curve is unavailable: there are no data or the empirical standard deviation is 0.",
+    "pngTitle": "Galton board",
+    "pngParameters": "{n} rows · p(right) = {p} · N = {N}",
+    "pngFit": "Fit: p̂ = {p}; μ̂ = {mean}; σ̂ = {sd}; γ̂ = {skew}",
+    "showFit": "Fitted binomial distribution",
+    "fittedLegend": "Fitted binomial",
+    "fitPLabel": "Estimated p",
+    "fitSkewLabel": "Model skewness",
+    "fittedVarianceLabel": "Fitted model variance",
+    "empiricalLabel": "From the data",
+    "empiricalSdLabel": "standard deviation",
+    "empiricalSkewLabel": "skewness",
+    "presetSkewed": "Strong skew (95%)",
+    "modelFittedShape": "The orange points have height N · P(K = k) for the fitted Bin(n, p̂). The smooth line only connects these points to make their shape easier to see. The model remains discrete; values of the connecting line between bins are not a continuous probability density.",
+    "modelEmpirical": "The empirical standard deviation and skewness are displayed separately. They use central moments of the data with denominator N, without bias corrections. They may differ from the fitted model parameters. Skewness is undefined when the corresponding standard deviation is 0.",
+    "modelNormal": "The optional gray normal curve is a symmetric comparison: its mean μ̄ and standard deviation s are calculated directly from the data. It does not use the standard deviation of the fitted binomial model. No normal curve is drawn when s = 0.",
+    "headerFitted": "Expected: fitted",
+    "fitWaiting": "Waiting for the first ball to land. The fit will use the observed bin counts.",
+    "fitSymmetric": "The fitted distribution has little skewness and is nearly symmetric.",
+    "fitLeftTail": "The fit has a longer left tail: its skewness is negative. Most balls land on the right side of the board.",
+    "fitRightTail": "The fit has a longer right tail: its skewness is positive. Most balls land on the left side of the board.",
+    "fitModelHint": "The orange line connects the fitted binomial probability points. The model captures skewness; it is not a continuous density.",
+    "normalComparisonNote": "The normal curve is only a symmetric comparison. Its mean and standard deviation come from the data, and it cannot reproduce skewness.",
+    "normalOutside": "Fitted normal probability outside the bin range: {percent}%.",
+    "fitSummary": "K ∼ Bin({n}, p̂ = {p})",
+    "pngEmpirical": "From the data: s = {sd}; skewness = {skew}"
+  }
+};
+</script>
+<script>
+/* Pure mathematics for a Galton board; no DOM and no external dependencies. */
+(function (root) {
+  'use strict';
+
+  const SQRT_2PI = Math.sqrt(2 * Math.PI);
+
+  function checkTrials(n) {
+    if (!Number.isInteger(n) || n < 0) throw new RangeError('n must be a nonnegative integer');
+  }
+
+  function checkProbability(p) {
+    if (!Number.isFinite(p) || p < 0 || p > 1) throw new RangeError('p must be in [0, 1]');
+  }
+
+  function checkGaussian(mean, sd) {
+    if (!Number.isFinite(mean) || !Number.isFinite(sd) || sd < 0) {
+      throw new RangeError('mean must be finite and sd must be finite and nonnegative');
+    }
+  }
+
+  /** P(K=k), k=0,...,n. Recurrence starts at a mode to avoid underflow. */
+  function binomialPMF(n, p) {
+    checkTrials(n);
+    checkProbability(p);
+    const weights = Array(n + 1).fill(0);
+    if (p === 0 || n === 0) { weights[0] = 1; return weights; }
+    if (p === 1) { weights[n] = 1; return weights; }
+    const q = 1 - p;
+    const mode = Math.min(n, Math.floor((n + 1) * p));
+    weights[mode] = 1;
+    for (let k = mode; k > 0; --k) {
+      weights[k - 1] = weights[k] * (k / (n - k + 1)) * (q / p);
+    }
+    for (let k = mode; k < n; ++k) {
+      weights[k + 1] = weights[k] * ((n - k) / (k + 1)) * (p / q);
+    }
+    const sum = weights.reduce((a, b) => a + b, 0);
+    return weights.map(value => value / sum);
+  }
+
+  /** Each entry is the cumulative number of right turns after that many rows. */
+  function samplePath(n, p, rng = Math.random) {
+    checkTrials(n);
+    checkProbability(p);
+    const path = Array(n + 1);
+    path[0] = 0;
+    let bin = 0;
+    for (let i = 1; i <= n; ++i) {
+      if (rng() < p) ++bin;
+      path[i] = bin;
+    }
+    return {path, bin};
+  }
+
+  /**
+   * Moments of observed integer bin positions k, with bin width 1.
+   * Mean and variance also give the Gaussian MLE. Skewness is the moment
+   * coefficient m3 / m2^(3/2), without a finite-sample bias correction.
+   */
+  function stats(counts) {
+    let N = 0;
+    let sum = 0;
+    for (let k = 0; k < counts.length; ++k) {
+      const count = counts[k];
+      if (!Number.isFinite(count) || count < 0 || !Number.isInteger(count)) {
+        throw new RangeError('counts must be nonnegative finite integers');
+      }
+      N += count;
+      sum += k * count;
+    }
+    if (N === 0) {
+      return {N: 0, mean: null, variance: null, sd: null,
+        unbiasedVariance: null, sampleVariance: null, sampleSd: null,
+        thirdCentralMoment: null, skewness: null};
+    }
+    const mean = sum / N;
+    let sumSquares = 0;
+    let sumCubes = 0;
+    for (let k = 0; k < counts.length; ++k) {
+      const offset = k - mean;
+      sumSquares += counts[k] * offset ** 2;
+      sumCubes += counts[k] * offset ** 3;
+    }
+    const variance = sumSquares / N;
+    const thirdCentralMoment = sumCubes / N;
+    const skewness = variance > 0 ? thirdCentralMoment / (variance ** 1.5) : null;
+    const unbiasedVariance = N > 1 ? sumSquares / (N - 1) : null;
+    return {N, mean, variance, sd: Math.sqrt(variance), unbiasedVariance,
+      sampleVariance: unbiasedVariance,
+      sampleSd: unbiasedVariance === null ? null : Math.sqrt(unbiasedVariance),
+      thirdCentralMoment, skewness};
+  }
+
+  /**
+   * Fit Bin(n,p) with known n=number of bins minus one.
+   * The MLE pHat=sum(k*count[k])/(n*N) is estimated from the observed balls,
+   * not copied from the simulation setting. Its probabilities are discrete
+   * bin masses; joining their plot points does not create a continuous PDF.
+   * For n=0, the sole bin identifies the distribution but not p.
+   */
+  function fitBinomial(counts) {
+    const n = counts.length - 1;
+    checkTrials(n);
+    const observed = stats(counts);
+    const N = observed.N;
+    if (N === 0) {
+      return {N, n, pHat: null, mean: null, variance: null, sd: null,
+        skewness: null, probabilities: null};
+    }
+    if (n === 0) {
+      return {N, n, pHat: null, mean: 0, variance: 0, sd: 0,
+        skewness: null, probabilities: [1]};
+    }
+    const pHat = Math.max(0, Math.min(1, observed.mean / n));
+    const mean = n * pHat;
+    const variance = n * pHat * (1 - pHat);
+    const sd = Math.sqrt(variance);
+    const skewness = sd > 0 ? (1 - 2 * pHat) / sd : null;
+    return {N, n, pHat, mean, variance, sd, skewness,
+      probabilities: binomialPMF(n, pHat)};
+  }
+
+  // Accurate rational approximation to the upper standard-normal tail for z >= 0.
+  // The continued fraction avoids overflow or cancellation for large positive z.
+  function standardNormalTail(z) {
+    if (z === 0) return 0.5;
+    if (z > 38) return 0;
+    const e = Math.exp(-z * z / 2);
+    if (z < 7.07106781186547) {
+      const numerator = ((((((0.0352624965998911 * z + 0.700383064443688) * z
+        + 6.37396220353165) * z + 33.912866078383) * z + 112.079291497871) * z
+        + 221.213596169931) * z + 220.206867912376);
+      const denominator = (((((((0.0883883476483184 * z + 1.75566716318264) * z
+        + 16.064177579207) * z + 86.7807322029461) * z + 296.564248779674) * z
+        + 637.333633378831) * z + 793.826512519948) * z + 440.413735824752);
+      return e * numerator / denominator;
+    }
+    const denominator = z + 1 / (z + 2 / (z + 3 / (z + 4 / (z + 0.65))));
+    return e / denominator / SQRT_2PI;
+  }
+
+  /** sd=0 is a point mass, so it has no ordinary finite Gaussian density. */
+  function normalPDF(x, mean, sd) {
+    checkGaussian(mean, sd);
+    if (sd === 0) return NaN;
+    const z = (x - mean) / sd;
+    return Math.exp(-z * z / 2) / (sd * SQRT_2PI);
+  }
+
+  /** At sd=0, return the CDF of a point mass at mean. */
+  function normalCDF(x, mean, sd) {
+    checkGaussian(mean, sd);
+    if (Number.isNaN(x)) return NaN;
+    if (sd === 0) return x < mean ? 0 : 1;
+    const z = (x - mean) / sd;
+    const tail = standardNormalTail(Math.abs(z));
+    return z <= 0 ? tail : 1 - tail;
+  }
+
+  function normalIntervalProbability(a, b, mean, sd) {
+    if (sd === 0) return normalCDF(b, mean, sd) - normalCDF(a, mean, sd);
+    const za = (a - mean) / sd;
+    const zb = (b - mean) / sd;
+    if (za >= 0) return standardNormalTail(za) - standardNormalTail(zb);
+    if (zb <= 0) return standardNormalTail(-zb) - standardNormalTail(-za);
+    return 1 - standardNormalTail(-za) - standardNormalTail(zb);
+  }
+
+  /**
+   * Continuity-corrected expectations in bins [k-1/2,k+1/2], k=0,...,n.
+   * Do NOT renormalize: an untruncated Gaussian can put mass outside the board.
+   * The outside probability is exposed explicitly rather than hidden.
+   */
+  function normalBinCounts(n, N, mean, sd) {
+    checkTrials(n);
+    checkGaussian(mean, sd);
+    if (!Number.isFinite(N) || N < 0) throw new RangeError('N must be finite and nonnegative');
+    const probabilities = Array.from({length: n + 1}, (_, k) =>
+      Math.max(0, normalIntervalProbability(k - 0.5, k + 0.5, mean, sd)));
+    const zLeft = sd === 0 ? 0 : (-0.5 - mean) / sd;
+    const zRight = sd === 0 ? 0 : (n + 0.5 - mean) / sd;
+    const leftOutside = zLeft <= 0 ? standardNormalTail(-zLeft)
+      : 1 - standardNormalTail(zLeft);
+    const rightOutside = zRight >= 0 ? standardNormalTail(zRight)
+      : 1 - standardNormalTail(-zRight);
+    const outsideProbability = sd === 0
+      ? ((mean <= -0.5 || mean > n + 0.5) ? 1 : 0)
+      : leftOutside + rightOutside;
+    const outside = Math.max(0, Math.min(1, outsideProbability));
+    return {counts: probabilities.map(value => N * value), probabilities,
+      outsideProbability: outside, outsideCount: N * outside};
+  }
+
+  /** Heuristic for the normal approximation to Bin(n,p), NOT a goodness-of-fit test. */
+  function approximationDiagnostic(n, p) {
+    checkTrials(n);
+    checkProbability(p);
+    const np = n * p;
+    const nq = n * (1 - p);
+    const minExpected = Math.min(np, nq);
+    const level = minExpected === 0 ? 'degenerate' : minExpected < 5 ? 'poor'
+      : minExpected < 10 ? 'borderline' : 'reasonable';
+    return {np, nq, minExpected, level};
+  }
+
+  const api = Object.freeze({binomialPMF, samplePath, stats, fitBinomial, normalPDF, normalCDF,
+    normalBinCounts, approximationDiagnostic});
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  if (root) root.GaltonMath = api;
+})(typeof window !== 'undefined' ? window : typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const M = window.GaltonMath;
+  const TEXT = window.GALTON_TEXTS;
+  const $ = id => document.getElementById(id);
+  const DEFAULTS = {bins:21, probability:50, rate:40, total:2500};
+  const PRESETS = {
+    symmetric:{bins:21,probability:50}, bias:{bins:21,probability:80},
+    few:{bins:5,probability:50}, many:{bins:61,probability:50},
+    skewed:{bins:21,probability:95}
+  };
+  const LIMITS = {bins:[2,61], probability:[0,100], rate:[1,300], total:[1,100000]};
+  const P = Object.assign({}, DEFAULTS);
+  const G = {width:1000,height:850,left:80,right:920,top:90,pegBottom:445,exit:500,histTop:558,floor:780};
+  const canvas = $('board-canvas');
+  const ctx = canvas.getContext('2d');
+  let lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'pl';
+  let counts=[], pmf=[], active=[], launched=0, landed=0, mode='ready';
+  let simTime=0, accumulator=0, lastFrame=0, lastHUD=0, raf=0, job=0;
+  let fit=null, binFit=null, normalBins=null, lastPath=null, hovered=-1, pegLayer=null;
+  let messageTimer=0;
+  const n = () => P.bins - 1;
+  const p = () => P.probability / 100;
+  const dx = () => (G.right-G.left)/P.bins;
+  const binX = k => G.left + (k+0.5)*dx();
+  const stepTime = () => Math.max(0.055, Math.min(0.19, 3.6/n()));
+  const flightTime = () => 0.35+n()*stepTime()+0.5;
+  const t = (key, vars={}) => (TEXT[lang][key] || TEXT.pl[key] || key).replace(/\{(\w+)\}/g, (_,k) => vars[k] === undefined ? '{'+k+'}' : vars[k]);
+  const fmt = (value,digits=0) => value === null || !Number.isFinite(value) ? '—' : value.toLocaleString(lang==='pl'?'pl-PL':'en-GB',{minimumFractionDigits:digits,maximumFractionDigits:digits});
+  const circle = (c,x,y,r,fill) => {c.beginPath();c.arc(x,y,r,0,2*Math.PI);c.fillStyle=fill;c.fill();};
+
+  Object.assign(TEXT.pl, {sourcesLabel:'Źródło modelu:', mobileChartNote:'Oś pozioma: numer kubełka. Dokładne liczby znajdziesz w tabeli wyników.', waitingToLand:'Kulki są w drodze do kubełków', fitWaiting:'Parametry pojawią się, gdy pierwsze kulki dotrą do kubełków.', hoverBin:'Kubełek', hoverCount:'kulek', livePause:'Animacja została wstrzymana, gdy karta była w tle.', csvOutside:'outside_board', rangeError:'Wpisz liczbę całkowitą od {min} do {max}.', exportEmpty:'Najpierw uruchom eksperyment lub pokaż cały wynik.'});
+  Object.assign(TEXT.en, {sourcesLabel:'Model reference:', mobileChartNote:'Horizontal axis: bin index. Exact counts are available in the results table.', waitingToLand:'Balls are on their way to the bins', fitWaiting:'Parameters will appear when the first balls reach the bins.', hoverBin:'Bin', hoverCount:'balls', livePause:'The animation was paused while the tab was in the background.', csvOutside:'outside_board', rangeError:'Enter an integer from {min} to {max}.', exportEmpty:'Start an experiment or show the full result first.'});
+
+  function setText(id, text) { const e=$(id); if(e && e.textContent!==text)e.textContent=text; }
+  function settingsNotes() {
+    setText('board-badge',t('boardBadge',{n:n(),bins:P.bins}));
+    setText('rows-note',t('rowsNote',{n:n()}));
+    setText('probability-note',t('probabilityNote',{left:fmt(100-P.probability),right:fmt(P.probability)}));
+    const seconds=(P.total-1)/P.rate;
+    const duration=seconds<120?t('seconds',{value:fmt(seconds,seconds<10?1:0)}):seconds<7200?t('minutes',{value:fmt(seconds/60,1)}):t('hours',{value:fmt(seconds/3600,1)});
+    setText('duration-note',t('durationNote',{duration:duration}));
+    setText('theory-mean',fmt(n()*p(),3));
+    setText('theory-sd',fmt(Math.sqrt(n()*p()*(1-p())),3));
+    const theorySd=Math.sqrt(n()*p()*(1-p()));
+    setText('theory-skewness',fmt(theorySd>0?(1-2*p())/theorySd:null,3));
+    $('probability').setAttribute('aria-valuetext',t('probabilityNote',{left:100-P.probability,right:P.probability}));
+    for(const el of document.querySelectorAll('[data-preset]')) {
+      const pr=PRESETS[el.dataset.preset];
+      el.setAttribute('aria-pressed',String(P.bins===pr.bins&&P.probability===pr.probability));
+    }
+  }
+  function syncControls() {
+    for(const key of Object.keys(LIMITS)){
+      $(key).value=P[key]; $(key+'-number').value=P[key];
+      $(key+'-number').removeAttribute('aria-invalid'); $(key+'-number').setCustomValidity('');
+    }
+    settingsNotes();
+  }
+  function setLanguage(value) {
+    lang=value;
+    document.documentElement.lang=lang;
+    document.title=t('pageTitle');
+    for(const el of document.querySelectorAll('[data-i18n]')) el.textContent=t(el.dataset.i18n);
+    $('lang-pl').setAttribute('aria-pressed',String(lang==='pl'));
+    $('lang-en').setAttribute('aria-pressed',String(lang==='en'));
+    canvas.setAttribute('aria-label',t('canvasLabel'));
+    $('message').hidden=true;
+    settingsNotes(); updateHUD(); updateTable(); requestDraw();
+  }
+  function refreshStats(){
+    fit=M.stats(counts);
+    binFit=M.fitBinomial(counts);
+    normalBins=fit.N>1&&fit.sd>0?M.normalBinCounts(n(),fit.N,fit.mean,fit.sd):null;
+  }
+  function updateComparisons(){
+    $('legend-fit').hidden=!$('show-fit').checked;
+    $('legend-binomial').hidden=!$('show-binomial').checked;
+    $('legend-normal').hidden=!$('show-normal').checked||!normalBins;
+    const note=$('normal-note');
+    note.hidden=!$('show-normal').checked;
+    let message=normalBins?t('normalComparisonNote'):t('normalUnavailable');
+    if(normalBins&&normalBins.outsideProbability>=0.0001)message+=' '+t('normalOutside',{percent:fmt(100*normalBins.outsideProbability,2)});
+    note.textContent=message;
+  }
+  function updateHUD() {
+    if(!fit)return;
+    setText('landed-count',fmt(landed));
+    setText('flying-count',fmt(active.length));
+    setText('remaining-count',fmt(P.total-launched));
+    $('progress').value=landed/P.total;
+    $('progress').setAttribute('aria-valuetext',fmt(landed)+' / '+fmt(P.total));
+    let status={ready:'statusReady',running:'statusRunning',paused:'statusPaused',filling:'statusFinishing',complete:'statusComplete'}[mode];
+    if(mode==='running'&&launched===P.total)status='statusDraining';
+    setText('status-text',t(status));
+    setText('pause-btn',t(mode==='paused'?'resume':'pause'));
+    $('pause-btn').disabled=mode!=='running'&&mode!=='paused';
+    $('finish-btn').disabled=mode==='complete'||mode==='filling';
+    $('save-png').disabled=landed===0;
+    $('save-csv').disabled=landed===0;
+    setText('fit-mean',fmt(binFit.mean,3));
+    setText('fit-sd',fmt(binFit.sd,3));
+    setText('fit-variance',fmt(binFit.variance,3));
+    setText('fit-p',binFit.pHat===null?'—':fmt(100*binFit.pHat,2)+'%');
+    setText('fit-skewness',fmt(binFit.skewness,3));
+    setText('empirical-sd',fmt(fit.sd,3));
+    setText('empirical-skewness',fmt(fit.skewness,3));
+    setText('sample-note',fit.N?t('sampleNote',{N:fmt(fit.N)}):t('sampleEmpty'));
+    setText('fit-summary',binFit.N?t('fitSummary',{n:n(),p:fmt(binFit.pHat,4)}):'');
+    let key=active.length?'fitWaiting':'fitEmpty';
+    if(fit.N>0){
+      if(binFit.sd===0)key='fitDegenerate';
+      else if(fit.N<30)key='fitSmallSample';
+      else if(Math.abs(binFit.skewness)<0.1)key='fitSymmetric';
+      else key=binFit.skewness<0?'fitLeftTail':'fitRightTail';
+    }
+    setText('fit-message',t(key));
+    $('fit-message').classList.toggle('warning',key==='fitSmallSample'||key==='fitDegenerate');
+    updateComparisons();
+    if($('data-details').open)updateTable();
+  }
+  function updateTable(){
+    if(!fit)return;
+    const frag=document.createDocumentFragment();
+    for(let k=0;k<P.bins;k++){
+      const row=document.createElement('tr');
+      [String(k),fmt(counts[k]),binFit.probabilities?fmt(fit.N*binFit.probabilities[k],3):'—',fmt(fit.N*pmf[k],3),normalBins?fmt(normalBins.counts[k],3):'—'].forEach((s,i)=>{
+        const el=document.createElement(i===0?'th':'td'); if(i===0)el.scope='row'; el.textContent=s; row.appendChild(el);
+      }); frag.appendChild(row);
+    }
+    $('data-body').replaceChildren(frag);
+  }
+  function resetExperiment(){
+    job++; mode='ready'; active=[]; launched=0; landed=0; simTime=0; accumulator=0;
+    lastFrame=0; lastPath=null; hovered=-1; counts=Array(P.bins).fill(0);
+    pmf=M.binomialPMF(n(),p()); refreshStats(); makePegs();
+    $('message').hidden=true; updateHUD(); updateTable(); requestDraw();
+  }
+  function start(){
+    resetExperiment(); mode='running'; spawn(0); lastFrame=0; updateHUD(); requestDraw();
+  }
+  function spawn(birth){
+    if(launched>=P.total)return;
+    const path=M.samplePath(n(),p());
+    active.push({path:path.path,bin:path.bin,birth:birth,id:launched});
+    lastPath=path.path; launched++;
+  }
+  function pause(){
+    if(mode==='running')mode='paused';
+    else if(mode==='paused'){mode='running';lastFrame=0;requestDraw();}
+    updateHUD();
+  }
+  function finish(){
+    if(mode==='complete'||mode==='filling')return;
+    mode='filling'; const mine=++job;
+    for(const b of active){counts[b.bin]++;landed++;}
+    active=[]; refreshStats(); updateHUD(); requestDraw();
+    function chunk(){
+      if(mine!==job||mode!=='filling')return;
+      const end=Math.min(launched+4000,P.total), rows=n(), prob=p();
+      for(;launched<end;launched++){
+        let k=0;
+        if(launched===P.total-1){const path=M.samplePath(rows,prob);k=path.bin;lastPath=path.path;}
+        else for(let r=0;r<rows;r++)if(Math.random()<prob)k++;
+        counts[k]++;landed++;
+      }
+      refreshStats();
+      if(launched===P.total){mode='complete';updateTable();}
+      updateHUD();requestDraw();
+      if(mode==='filling')requestAnimationFrame(chunk);
+    }
+    requestAnimationFrame(chunk);
+  }
+  function frame(now){
+    raf=0;
+    if(mode==='running'){
+      const dt=lastFrame?Math.min((now-lastFrame)/1000,0.25):0;
+      lastFrame=now;simTime+=dt;
+      if(launched<P.total){
+        accumulator+=dt*P.rate;
+        while(accumulator>=1&&launched<P.total){accumulator-=1;spawn(simTime-accumulator/P.rate);}
+      }
+      let changed=false;
+      active=active.filter(b=>{
+        if(simTime-b.birth>=flightTime()){counts[b.bin]++;landed++;changed=true;return false;}
+        return true;
+      });
+      if(changed)refreshStats();
+      if(landed===P.total){mode='complete';updateHUD();updateTable();}
+      else if(now-lastHUD>100){lastHUD=now;updateHUD();}
+    }
+    draw();
+    if(mode==='running')requestDraw();
+  }
+  function requestDraw(){if(!raf)raf=requestAnimationFrame(frame);}
+  function pegY(row){return G.top+(G.pegBottom-G.top)*row/Math.max(1,n()-1);}
+  function pathNode(path,i){return {x:500+(path[i]-i/2)*dx(),y:i===n()?G.exit:pegY(i)};}
+  function makePegs(){
+    pegLayer=document.createElement('canvas');pegLayer.width=2000;pegLayer.height=1100;
+    const c=pegLayer.getContext('2d');c.scale(2,2);
+    c.fillStyle='#f5f8f6';c.strokeStyle='#e2eae5';c.lineWidth=1.5;
+    c.beginPath();c.moveTo(500,G.top-28);
+    for(let r=0;r<n();r++)c.lineTo(500-r*dx()/2-14,pegY(r));
+    c.lineTo(G.left,G.exit+16);c.lineTo(G.right,G.exit+16);
+    for(let r=n()-1;r>=0;r--)c.lineTo(500+r*dx()/2+14,pegY(r));
+    c.closePath();c.fill();c.stroke();
+    const radius=Math.max(2.1,Math.min(5,dx()*0.105));
+    for(let r=0;r<n();r++)for(let j=0;j<=r;j++){
+      const x=500+(j-r/2)*dx(), y=pegY(r);
+      circle(c,x,y+1,radius,'#b5c8bd');circle(c,x,y,radius,'#719b87');circle(c,x-radius*0.28,y-radius*0.3,radius*0.28,'#c4d9ce');
+    }
+  }
+  function scaleMax(){
+    let peak=Math.max(1,...counts);
+    if($('show-fit').checked&&binFit.probabilities)peak=Math.max(peak,...binFit.probabilities.map(x=>x*landed));
+    if($('show-binomial').checked)peak=Math.max(peak,...pmf.map(x=>x*landed));
+    if($('show-normal').checked&&normalBins)peak=Math.max(peak,landed/(fit.sd*Math.sqrt(2*Math.PI)));
+    const raw=peak*1.16, power=Math.pow(10,Math.floor(Math.log10(raw)));
+    return Math.ceil(raw/power*2)/2*power;
+  }
+  function drawFittedMasses(c,yFor){
+    // A monotone Hermite guide joins discrete PMF points without overshoot.
+    // Its interpolated height is not a continuous probability density.
+    const ys=binFit.probabilities.map(q=>yFor(landed*q));
+    c.strokeStyle='#cb6743';c.lineWidth=4;c.setLineDash([]);
+    if(binFit.sd===0){
+      const k=Math.round(binFit.mean);c.beginPath();c.moveTo(binX(k),G.floor);c.lineTo(binX(k),ys[k]);c.stroke();
+      circle(c,binX(k),ys[k],4.5,'#cb6743');return;
+    }
+    const deltas=ys.slice(1).map((y,i)=>y-ys[i]);
+    const slopes=ys.map((_,i)=>{
+      if(i===0)return deltas[0];if(i===ys.length-1)return deltas[deltas.length-1];
+      const a=deltas[i-1],b=deltas[i];return a*b<=0?0:2*a*b/(a+b);
+    });
+    c.beginPath();c.moveTo(binX(0),ys[0]);
+    for(let i=0;i<ys.length-1;i++)c.bezierCurveTo(binX(i)+dx()/3,ys[i]+slopes[i]/3,binX(i+1)-dx()/3,ys[i+1]-slopes[i+1]/3,binX(i+1),ys[i+1]);
+    c.stroke();
+    for(let k=0;k<P.bins;k++)if(binFit.probabilities[k]>0.0001)circle(c,binX(k),ys[k],Math.max(2.6,Math.min(4,dx()*0.1)),'#cb6743');
+  }
+  function particlePosition(b,maxScale){
+    const age=Math.max(0,simTime-b.birth), step=stepTime();
+    const radius=Math.max(2.5,Math.min(6,dx()*0.16));
+    const pegR=Math.max(2.1,Math.min(5,dx()*0.105));
+    if(age<0.35)return {x:500,y:24+(G.top-radius-pegR-24)*Math.pow(age/0.35,1.5),r:radius};
+    const a=(age-0.35)/step;
+    if(a<n()){
+      const i=Math.floor(a), f=a-i, u=pathNode(b.path,i),v=pathNode(b.path,i+1);
+      const arc=Math.min(9,(v.y-u.y)*0.28);
+      return {x:u.x+(v.x-u.x)*f,y:u.y+(v.y-u.y)*f-radius-pegR-arc*Math.sin(Math.PI*f),r:radius};
+    }
+    const f=Math.min(1,(age-0.35-n()*step)/0.5);
+    const target=G.floor-(G.floor-G.histTop)*counts[b.bin]/maxScale-radius;
+    return {x:binX(b.bin),y:G.exit+(target-G.exit)*f*f,r:radius};
+  }
+  function lineText(c,text,x,y,size=20,color='#61756f',align='left'){
+    c.font='500 '+(size*(c._galtonLabelScale||1))+'px system-ui, sans-serif';c.fillStyle=color;c.textAlign=align;c.fillText(text,x,y);
+  }
+  function drawScene(c,particles=true){
+    const compact=particles&&canvas.clientWidth<560;
+    c._galtonLabelScale=compact?Math.min(2.15,620/Math.max(canvas.clientWidth,280)):1;
+    c.fillStyle='#ffffff';c.fillRect(0,0,G.width,G.height);
+    if(pegLayer)c.drawImage(pegLayer,0,0,1000,550);
+    // Funnel and probability labels stay separate from the data chart.
+    c.beginPath();c.moveTo(474,12);c.lineTo(526,12);c.lineTo(507,47);c.lineTo(507,66);c.lineTo(493,66);c.lineTo(493,47);c.closePath();
+    c.fillStyle='#e5eee9';c.strokeStyle='#7e9d8d';c.lineWidth=2;c.fill();c.stroke();
+    lineText(c,t('leftLabel')+' '+fmt(100-P.probability)+'%',82,37,22,'#365b4b');
+    lineText(c,t('rightLabel')+' '+fmt(P.probability)+'%',918,37,22,'#365b4b','right');
+    const max=scaleMax(), h=G.floor-G.histTop, bw=dx();
+    const yFor=value=>G.floor-h*value/max;
+    c.fillStyle='#f7f9f8';c.fillRect(G.left,G.histTop,G.right-G.left,h);
+    for(let i=0;i<=4;i++){
+      const y=G.floor-h*i/4;
+      c.strokeStyle='#e1e9e4';c.lineWidth=1;c.beginPath();c.moveTo(G.left,y);c.lineTo(G.right,y);c.stroke();
+      const value=max*i/4;
+      const axisNumber=compact&&value>=1000?fmt(value/1000,value<10000?1:0)+'k':fmt(value,max<4?1:0);
+      lineText(c,axisNumber,G.left-12,y+6,compact?16:17,'#61756f','right');
+    }
+    lineText(c,t('countAxis'),G.left,540,20);
+    for(let k=0;k<P.bins;k++){
+      const x=G.left+k*bw;
+      if(k===hovered){c.fillStyle='#e1eee6';c.fillRect(x,G.histTop,bw,h);}
+      c.fillStyle=k===hovered?'#245a48':'#327965';
+      const barHeight=h*counts[k]/max, gap=Math.max(1.2,Math.min(4,bw*0.1));
+      if(counts[k])c.fillRect(x+gap,G.floor-barHeight,bw-2*gap,barHeight);
+      c.strokeStyle='#cadbd1';c.lineWidth=1;c.beginPath();c.moveTo(x,G.histTop);c.lineTo(x,G.floor);c.stroke();
+    }
+    c.beginPath();c.moveTo(G.right,G.histTop);c.lineTo(G.right,G.floor);c.stroke();
+    // The configured model and optional normal comparison sit behind the fit.
+    c.save();c.beginPath();c.rect(G.left,G.histTop-2,G.right-G.left,h+2);c.clip();
+    if(landed&&$('show-binomial').checked){
+      c.strokeStyle='#365e91';c.lineWidth=2.8;c.setLineDash([7,5]);c.beginPath();
+      for(let k=0;k<P.bins;k++){const y=yFor(landed*pmf[k]);if(!k)c.moveTo(binX(k),y);else c.lineTo(binX(k),y);}
+      c.stroke();c.setLineDash([]);
+      for(let k=0;k<P.bins;k++)circle(c,binX(k),yFor(landed*pmf[k]),Math.max(2,Math.min(3.5,bw*0.08)),'#365e91');
+    }
+    if(normalBins&&$('show-normal').checked){
+      c.strokeStyle='#8a8999';c.lineWidth=2.5;c.setLineDash([10,6]);c.beginPath();
+      // Include the fitted mean exactly, even for a very narrow bell.
+      const positions=[];for(let j=0;j<=1000;j++)positions.push(-0.5+P.bins*j/1000);
+      positions.push(fit.mean);positions.sort((a,b)=>a-b);
+      positions.forEach((k,i)=>{const x=binX(k),y=yFor(landed*M.normalPDF(k,fit.mean,fit.sd));if(!i)c.moveTo(x,y);else c.lineTo(x,y);});c.stroke();c.setLineDash([]);
+    }
+    if(binFit.probabilities&&$('show-fit').checked)drawFittedMasses(c,yFor);
+    c.restore();
+    if($('show-counts').checked&&(!compact||P.bins<=12)){
+      const skip=Math.max(1,Math.ceil(P.bins/25));
+      for(let k=0;k<P.bins;k++)if(counts[k]>0&&(k%skip===0||k===hovered)){
+        lineText(c,fmt(counts[k]),binX(k),yFor(counts[k])-8,Math.min(18,Math.max(12,bw*0.56)),'#294c3b','center');
+      }
+    }
+    c.strokeStyle='#7e9d8d';c.lineWidth=1.8;c.beginPath();c.moveTo(G.left,G.floor);c.lineTo(G.right,G.floor);c.stroke();
+    const tickEvery=Math.max(1,Math.ceil(n()/(compact?6:12)));
+    for(let k=0;k<P.bins;k++)if(k%tickEvery===0||k===n())lineText(c,String(k),binX(k),compact?820:804,compact?22:19,'#365b4b','center');
+    if(!compact)lineText(c,t('binAxis'),500,836,20,'#61756f','center');
+    if(!landed)lineText(c,t(active.length?'waitingToLand':'emptyBoard'),500,670,compact?20:22,'#758a7d','center');
+    if($('show-trail').checked&&lastPath){
+      const focus=active.length?active[0]:null, path=focus?focus.path:lastPath;
+      const reached=focus?Math.max(0,Math.min(n(),(simTime-focus.birth-0.35)/stepTime())):n();
+      c.beginPath();c.moveTo(500,G.top-10);
+      for(let i=1;i<=Math.floor(reached);i++){const v=pathNode(path,i);c.lineTo(v.x,v.y-10);}
+      if(focus){const pos=particlePosition(focus,max);c.lineTo(pos.x,pos.y);}
+      c.strokeStyle='#d39b46';c.lineWidth=3;c.globalAlpha=0.6;c.stroke();c.globalAlpha=1;
+    }
+    if(particles)for(const b of active){
+      const pos=particlePosition(b,max);
+      circle(c,pos.x,pos.y,pos.r,'#e6a54c');
+      if(pos.r>3.5)circle(c,pos.x-pos.r*0.25,pos.y-pos.r*0.28,pos.r*0.25,'#ffe2a0');
+    }
+    if(hovered>=0){
+      const label=t('hoverBin')+' '+hovered+': '+fmt(counts[hovered])+' '+t('hoverCount');
+      c.font='600 '+(20*c._galtonLabelScale)+'px system-ui, sans-serif';const w=c.measureText(label).width+28;
+      const x=Math.max(80,Math.min(920-w,binX(hovered)-w/2));
+      c.fillStyle='#173d36';c.fillRect(x,488,w,36*c._galtonLabelScale);lineText(c,label,x+14,488+25*c._galtonLabelScale,20,'white');
+    }
+    c._galtonLabelScale=1;
+  }
+  function draw(){
+    ctx.setTransform(canvas.width/G.width,0,0,canvas.height/G.height,0,0);
+    drawScene(ctx);
+  }
+  function resize(){
+    const size=$('canvas-wrap').getBoundingClientRect();
+    const ratio=Math.min(2,window.devicePixelRatio||1);
+    const w=Math.max(800,Math.round(size.width*ratio));
+    canvas.width=w;canvas.height=Math.round(w*G.height/G.width);requestDraw();
+  }
+  function toast(key){
+    const el=$('message');el.textContent=t(key);el.hidden=false;
+    clearTimeout(messageTimer);messageTimer=setTimeout(()=>{el.hidden=true;},6000);
+  }
+  function download(blob,name){
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),10000);
+  }
+  function exportCSV(){
+    if(!landed){toast('exportEmpty');return;}
+    const header=['bin_k','observed_count','observed_fraction','fitted_binomial_probability','fitted_binomial_expected_count','configured_binomial_probability','configured_binomial_expected_count','normal_interval_probability','normal_interval_expected_count','rows_n','configured_probability_right','target_balls','landed_balls','estimated_probability_right','fitted_binomial_mean','fitted_binomial_sd','fitted_binomial_variance','fitted_binomial_skewness','empirical_mean','empirical_sd','empirical_variance','empirical_skewness','configured_mean','configured_sd','configured_skewness'];
+    const theoreticalSd=Math.sqrt(n()*p()*(1-p()));
+    const suffix=[n(),p(),P.total,landed,binFit.pHat,binFit.mean,binFit.sd,binFit.variance,binFit.skewness,fit.mean,fit.sd,fit.variance,fit.skewness,n()*p(),theoreticalSd,theoreticalSd>0?(1-2*p())/theoreticalSd:null];
+    const rows=[header.join(',')];
+    for(let k=0;k<P.bins;k++)rows.push([k,counts[k],counts[k]/landed,binFit.probabilities[k],binFit.probabilities[k]*landed,pmf[k],pmf[k]*landed,normalBins?normalBins.probabilities[k]:'',normalBins?normalBins.counts[k]:'',...suffix].join(','));
+    if(normalBins)rows.push(['outside_board',0,0,0,0,0,0,normalBins.outsideProbability,normalBins.outsideCount,...suffix].join(','));
+    download(new Blob(['\ufeff'+rows.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'}),'Galton_results.csv');toast('csvSaved');
+  }
+  function exportPNG(){
+    if(!landed){toast('exportEmpty');return;}
+    const out=document.createElement('canvas');out.width=1800;out.height=2000;
+    const c=out.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,out.width,out.height);
+    lineText(c,t('pngTitle'),90,82,42,'#173d36');
+    lineText(c,t('pngParameters',{n:n(),p:fmt(p(),2),N:fmt(landed)}),90,128,26);
+    c.save();c.translate(0,155);c.scale(1.8,1.8);const old=hovered;hovered=-1;drawScene(c,false);hovered=old;c.restore();
+    lineText(c,t('pngFit',{p:fmt(binFit.pHat,4),mean:fmt(binFit.mean,4),sd:fmt(binFit.sd,4),skew:fmt(binFit.skewness,4)}),90,1740,28,'#173d36');
+    lineText(c,t('pngEmpirical',{sd:fmt(fit.sd,4),skew:fmt(fit.skewness,4)}),90,1790,25);
+    const labels=[[t('drawLegend'),'#327965']];
+    if($('show-fit').checked)labels.push([t('fittedLegend'),'#cb6743']);
+    if($('show-binomial').checked)labels.push([t('binomialLegend'),'#365e91']);
+    if($('show-normal').checked&&normalBins)labels.push([t('normalLegend'),'#8a8999']);
+    labels.forEach((item,i)=>lineText(c,item[0],90+(i%2)*820,1850+Math.floor(i/2)*42,24,item[1]));
+    lineText(c,'© Paweł Dłotko',90,1960,22);
+    out.toBlob(blob=>{if(blob){download(blob,'Galton_board.png');toast('pngSaved');}else toast('exportError');},'image/png');
+  }
+  function applySetting(key,value){
+    if(P[key]===value)return;
+    P[key]=value; $(key).value=value;$(key+'-number').value=value;
+    settingsNotes();
+    if(key==='rate'){accumulator=0;return;}
+    resetExperiment();
+  }
+  for(const key of Object.keys(LIMITS)){
+    $(key).addEventListener('input',()=>applySetting(key,Number($(key).value)));
+    const input=$(key+'-number');
+    const validate=()=>{
+      const value=Number(input.value),[min,max]=LIMITS[key];
+      const valid=input.value.trim()!==''&&Number.isFinite(value)&&Number.isInteger(value)&&value>=min&&value<=max;
+      input.setAttribute('aria-invalid',String(!valid));
+      input.setCustomValidity(valid?'':t('rangeError',{min:min,max:max}));
+      if(valid)applySetting(key,value);
+      return valid;
+    };
+    input.addEventListener('input',validate);
+    input.addEventListener('change',()=>{if(!validate())input.reportValidity();});
+    input.addEventListener('blur',()=>{if(!validate()){input.value=P[key];input.removeAttribute('aria-invalid');input.setCustomValidity('');}});
+  }
+  $('start-btn').addEventListener('click',start);
+  $('pause-btn').addEventListener('click',pause);
+  $('finish-btn').addEventListener('click',finish);
+  $('clear-btn').addEventListener('click',resetExperiment);
+  $('reset-btn').addEventListener('click',()=>{
+    Object.assign(P,DEFAULTS);syncControls();
+    $('show-fit').checked=true;$('show-normal').checked=false;$('show-binomial').checked=false;$('show-trail').checked=false;$('show-counts').checked=true;
+    resetExperiment();finish();
+  });
+  for(const el of document.querySelectorAll('[data-preset]'))el.addEventListener('click',()=>{
+    Object.assign(P,PRESETS[el.dataset.preset]);syncControls();resetExperiment();finish();
+  });
+  for(const id of ['show-fit','show-normal','show-binomial','show-trail','show-counts'])$(id).addEventListener('change',()=>{updateComparisons();requestDraw();});
+  $('lang-pl').addEventListener('click',()=>setLanguage('pl'));
+  $('lang-en').addEventListener('click',()=>setLanguage('en'));
+  $('save-csv').addEventListener('click',()=>{try{exportCSV();}catch(_){toast('exportError');}});
+  $('save-png').addEventListener('click',()=>{try{exportPNG();}catch(_){toast('exportError');}});
+  $('data-details').addEventListener('toggle',()=>{if($('data-details').open)updateTable();});
+  canvas.addEventListener('pointermove',ev=>{
+    const rect=canvas.getBoundingClientRect(),x=(ev.clientX-rect.left)*1000/rect.width,y=(ev.clientY-rect.top)*850/rect.height;
+    const k=x>=G.left&&x<G.right&&y>=G.histTop&&y<G.floor?Math.floor((x-G.left)/dx()):-1;
+    if(k!==hovered){hovered=k;requestDraw();}
+  });
+  canvas.addEventListener('pointerleave',()=>{hovered=-1;requestDraw();});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden&&mode==='running'){mode='paused';lastFrame=0;updateHUD();}
+  });
+  const source=document.createElement('p');source.className='hint';
+  const sourceLabel=document.createElement('span');sourceLabel.dataset.i18n='sourcesLabel';source.appendChild(sourceLabel);source.append(' ');
+  const link=document.createElement('a');link.href='https://www.itl.nist.gov/div898/handbook/eda/section3/eda366i.htm';link.textContent='NIST · Binomial Distribution';link.target='_blank';link.rel='noopener';source.appendChild(link);
+  document.querySelector('#model .model-content').appendChild(source);
+  const caption=document.createElement('p');caption.className='mobile-chart-note';caption.dataset.i18n='mobileChartNote';
+  $('canvas-wrap').after(caption);
+  syncControls();resetExperiment();setLanguage(lang);resize();
+  if(typeof ResizeObserver!=='undefined')new ResizeObserver(resize).observe($('canvas-wrap'));
+  else window.addEventListener('resize',resize);
+  finish();
+  // Read-only snapshot for accessibility integrations and numerical verification.
+  Object.defineProperty(window,'GaltonState',{value:()=>({parameters:Object.assign({},P),mode:mode,counts:counts.slice(),landed:landed,launched:launched,inFlight:active.length,fit:Object.assign({},fit),binomialFit:Object.assign({},binFit,{probabilities:binFit.probabilities?binFit.probabilities.slice():null}),normalOutside:normalBins?normalBins.outsideProbability:null}),writable:false});
+})();
+
+</script>
+</body>
+</html>
